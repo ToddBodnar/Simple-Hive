@@ -16,7 +16,7 @@ public class table {
     {
         storage = store;
         colNames = names;
-        nextRow();
+        first();
     }
     private String colNames[],row[];
     private file storage;
@@ -92,5 +92,9 @@ public class table {
             nextRow();
         }
         return result;
+    }
+
+    public void reset() {
+        storage.resetStream();
     }
 }

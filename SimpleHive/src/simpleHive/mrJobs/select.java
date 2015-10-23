@@ -73,10 +73,10 @@ public class select extends query{
     @Override
     public void init(context cont) {
         ramFile r = new ramFile();
-        input.first();
-        while(input.hasNextRow())
+        input.reset();
+        do
         {
-            
+            input.nextRow();
             Object next[] = input.get();
             String result = "";
             boolean first = true;
@@ -98,8 +98,9 @@ public class select extends query{
             }
             r.append(result);
             
-            input.nextRow();
-        }
+            
+        }while(input.hasNextRow());
+        
         String names[] = new String[variable.length];
         for(int ct=0;ct<names.length;ct++)
         {
