@@ -25,7 +25,7 @@ public class hadoopDriver {
         }
         else
         {
-            if((100*reduceCt/totalReduce)==(100*(reduceCt-1)/totalReduce))
+            if(totalReduce==0 || (100*reduceCt/totalReduce)==(100*(reduceCt-1)/totalReduce))
                 return;
         }
         lastUpdate = System.currentTimeMillis();
@@ -40,16 +40,21 @@ public class hadoopDriver {
     public static void run(mrJob theJob, boolean verbose)
     {
         context cont = new context();
+        //if(verbose)
+          //  System.out.println("Init "+theJob.getClass().toString());
         theJob.init(cont);
         int mapCt=0;
         int reduceCt=0;
+        //if(verbose)
+          //  System.out.println("Map "+theJob.getClass().toString());
         for(Object o:cont.toProcess)
         {
             theJob.map(o, cont);
             mapCt++;
             log(mapCt,reduceCt,cont.toProcess.size(),1,true,verbose);
         }
-        
+        //if(verbose)
+          //  System.out.println("Reduce "+theJob.getClass().toString());
         for(Object o:cont.data.keySet())
         {
             theJob.reduce(o, cont.data.get(o));

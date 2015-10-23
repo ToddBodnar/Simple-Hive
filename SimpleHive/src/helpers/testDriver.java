@@ -8,6 +8,7 @@ package helpers;
 import simpleHDFS.tests.laggyRamTest;
 import simpleHDFS.tests.ramFileTest;
 import simpleHadoop.tests.wordCount;
+import simpleHive.mrJobs.tests.testBooleanTest;
 
 /**
  *
@@ -35,6 +36,6 @@ public class testDriver {
             System.out.println("WARNING: SOME TESTS FAILED");
     }
 
-    static tests[] toTest = {new ramFileTest(), new laggyRamTest(), new wordCount(null)};
-    static String[] names = {"simpleHDFS/ramFile.java","simpleHDFS/laggyRamFile.java","simpleHadoop/tests/wordCount.java"};
+    static tests[] toTest = {new ramFileTest(), new laggyRamTest(), new wordCount(null), new testBooleanTest()};
+    static String[] names = {"simpleHDFS/ramFile.java","simpleHDFS/laggyRamFile.java","simpleHadoop/tests/wordCount.java", "simpleHive/mrJobs/booleanTests.java"};
 }
