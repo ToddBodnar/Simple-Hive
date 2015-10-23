@@ -10,21 +10,32 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
- *
+ * A set of helpers for the mrJob and the driver
  * @author toddbodnar
  */
 public class context {
     HashMap<Object,LinkedList<Object>> data;
     LinkedList<Object> toProcess;
-    public context()
+    context()
     {
         data = new HashMap<Object,LinkedList<Object>>();
         toProcess = new LinkedList<Object>();
     }
+    
+    /**
+     * Adds a job for a mapper to process
+     * @param job 
+     */
     public void add(Object job)
     {
         toProcess.add(job);
     }
+    
+    /**
+     * Takes the output of a mapper
+     * @param key
+     * @param value 
+     */
     public void emit(Object key, Object value)
     {
         LinkedList<Object> set;

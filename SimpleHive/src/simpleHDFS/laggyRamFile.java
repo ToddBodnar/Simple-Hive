@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A ram file that can take up to a second to process
+ * A ram file that can take up to a second to process, to simulate network lag/etc
  * @author toddbodnar
  */
 public class laggyRamFile extends ramFile{

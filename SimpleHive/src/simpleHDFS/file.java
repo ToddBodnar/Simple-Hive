@@ -6,7 +6,7 @@
 package simpleHDFS;
 
 /**
- *
+ * Interface for a file stream
  * @author toddbodnar
  */
 public interface file {

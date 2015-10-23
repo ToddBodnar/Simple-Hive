@@ -6,12 +6,12 @@
 package simpleHadoop;
 
 /**
- *
+ * A driver to run mrJobs.
  * @author toddbodnar
  */
 public class hadoopDriver {
-    public static long lastUpdate = -1;
-    public static void log(int mapCt, int reduceCt, int totalMap, int totalReduce, boolean doingMap, boolean verbose)
+    private static long lastUpdate = -1;
+    private static void log(int mapCt, int reduceCt, int totalMap, int totalReduce, boolean doingMap, boolean verbose)
     {
         if(System.currentTimeMillis() - lastUpdate < 500)
             return;
@@ -31,6 +31,12 @@ public class hadoopDriver {
         lastUpdate = System.currentTimeMillis();
         System.out.println(System.currentTimeMillis()+"\tMap "+(100*mapCt/totalMap)+"% \tReduce "+(100*reduceCt/totalReduce)+"%");
     }
+    
+    /**
+     * Runs a job
+     * @param theJob the mrJob to be run
+     * @param verbose if true, output progress information
+     */
     public static void run(mrJob theJob, boolean verbose)
     {
         context cont = new context();
