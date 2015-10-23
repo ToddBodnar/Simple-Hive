@@ -41,6 +41,15 @@ public class database {
         r.append("2364\0"+"8\0"+"3\0"+"Data");
         table t = new table(r,new String[]{"id","age","ship","name"});
         result.addTable("people", t);
+        
+        
+        r = new ramFile();
+        r.append("1\0"+"Enterprise");
+        r.append("2\0"+"Voyager");
+        r.append("3\0"+"Enterprise D");
+        
+        t = new table(r,new String[]{"shipID","name"});
+        result.addTable("ships",t);
         return result;
     }
 }
