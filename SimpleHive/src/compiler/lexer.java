@@ -15,7 +15,7 @@ import simpleHive.database;
  * @author toddbodnar
  */
 public class lexer {
-    public static LinkedList<token> lex(String in) throws Exception
+    public static LinkedList<String> lexStr(String in) throws Exception
     {
         LinkedList<String> tokenized = new LinkedList<String>();
         
@@ -34,9 +34,12 @@ public class lexer {
                     partial = "";
                     break;
                 case ',':
+                case '=':
+                case '<':
+                case '>':
                     if(!partial.equals(""))
                         tokenized.add(partial);
-                    tokenized.add(",");
+                    tokenized.add(c+"");
                     partial="";
                     break;
                 default:
@@ -48,9 +51,12 @@ public class lexer {
         if(!partial.equals(""))
             tokenized.add(partial);
         
-        for(String s:tokenized)
-            System.out.println(s);
+        return tokenized;
         
+    }
+    public static LinkedList<token> lex(String input) throws Exception
+    {
+        LinkedList<String> tokenized = lexStr(input);
         LinkedList<token> result = new LinkedList<token>();
         
         for(String s:tokenized)

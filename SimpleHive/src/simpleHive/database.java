@@ -52,4 +52,12 @@ public class database {
         result.addTable("ships",t);
         return result;
     }
+
+    String getTableName(table table) {
+        for(String key:tables.keySet())
+            if(tables.get(key)==table)
+                return key;
+        
+        return "temp table";
+    }
 }

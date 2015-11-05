@@ -5,6 +5,7 @@
  */
 package simpleHive;
 
+import helpers.settings;
 import simpleHDFS.file;
 
 /**
@@ -66,7 +67,7 @@ public class table {
         return colNames;
     }
     
-    public String toString()
+    public String print()
     {
         String result = "";
         for(int ct=0;ct<colNames.length;ct++)
@@ -96,5 +97,10 @@ public class table {
 
     public void reset() {
         storage.resetStream();
+    }
+
+    public String toString() {
+        String name = settings.currentDB.getTableName(this);
+        return "Table "+name+" with "+getColNames().length+" columns";
     }
 }

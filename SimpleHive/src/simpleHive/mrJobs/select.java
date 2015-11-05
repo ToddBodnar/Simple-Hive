@@ -119,6 +119,32 @@ public class select extends query{
         }
         result = new table(r, names);
     }
+    
+    public String toString()
+    {
+        String result = "select ";
+        
+        String names[] = new String[variable.length];
+        for(int ct=0;ct<names.length;ct++)
+        {
+            if(this.names[ct]!=null)
+            {
+                names[ct] = this.names[ct];
+            }
+            else if(variable[ct])
+            {
+                names[ct] = input.getColName((int) value[ct]);
+            }
+            else
+            {
+                names[ct] = (String)value[ct];
+            }
+        }
+        
+        for(String n:names)
+            result+=n+" ";
+        return result+"from "+(input==null?"null":input.toString());
+    }
 
     @Override
     public void map(Object input, context cont) {
