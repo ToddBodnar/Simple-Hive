@@ -28,6 +28,17 @@ public class leftJoin extends query{
         this.otherKey=otherKey;
         this.other=other;
     }
+    
+    public leftJoin(int key, int otherkey)
+    {
+        this(null,key,otherkey);
+    }
+    
+    public void setOther(table other)
+    {
+        this.other=other;
+    }
+    
     table main,other;
     ramFile storage;
     int mainKey,otherKey;
