@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package parser;
+package compiler;
 
 import java.util.LinkedList;
 import simpleHadoop.hadoopDriver;

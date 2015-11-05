@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package parser;
+package helpers;
+
+import simpleHive.database;
 
 /**
  *
  * @author toddbodnar
  */
-public class parse {
-    
+public class settings {
+    public static database currentDB = null;
 }
