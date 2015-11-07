@@ -75,6 +75,11 @@ public class table {
             result+=colNames[ct]+"\t";
         }
         result+="\n";
+        for(int ct=0;ct<colNames.length;ct++)
+        {
+            result+="-----\t";
+        }
+        result+="\n";
         first();
         if(!hasNextRow())
             return result;
