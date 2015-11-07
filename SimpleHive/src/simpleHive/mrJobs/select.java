@@ -19,6 +19,7 @@ public class select extends query{
     private boolean variable[];
     private Object value[];
     private String names[];
+    private String query;
     table result;
     table input;
     /**
@@ -27,7 +28,10 @@ public class select extends query{
      */
     public select(String toRetain)
     {
-        String split[] = toRetain.split(",");
+        query = toRetain;
+        /**
+         *  //this code assumes a preparsed variable list, moved this down to the setInput command to have a JIT processing
+         * String split[] = toRetain.split(",");
         variable = new boolean[split.length];
         value = new Object[split.length];
         names = new String[split.length];
@@ -57,7 +61,7 @@ public class select extends query{
                 variable[ct] = false;
                 value[ct] = split[ct];
             }
-        }
+        }**/
     }
     @Override
     public table getResult() {
@@ -68,10 +72,50 @@ public class select extends query{
     public void setInput(table in) {
         //no map reduce for a select
         input = in;
+        
+        if(query.trim().equals("*"))
+            return;
+        
+        String split[] = query.split(",");
+        variable = new boolean[split.length];
+        value = new Object[split.length];
+        names = new String[split.length];
+        for(int ct=0;ct<split.length;ct++)
+        {
+            if(split[ct].contains(" as "))
+            {
+                int start = -1;
+                for(int i=0;i<split[ct].length();i++)
+                {
+                    if(split[ct].substring(i).startsWith(" as "))
+                    {
+                        start = i;
+                        break;
+                    }
+                }
+                names[ct]=split[ct].substring(start+4).trim();
+                split[ct] = split[ct].substring(0, start).trim();
+            }
+            if(in.getColNum(split[ct].trim())!=-1)
+            {
+                variable[ct] = true;
+                value[ct] = in.getColNum(split[ct].trim());
+            }
+            else
+            {
+                variable[ct] = false;
+                value[ct] = split[ct];
+            }
+        }
     }
 
     @Override
     public void init(context cont) {
+        if(query.trim().equals("*"))
+        {
+            result = input;
+            return;
+        }
         ramFile r = new ramFile();
         input.reset();
         do
@@ -123,7 +167,8 @@ public class select extends query{
     public String toString()
     {
         String result = "select ";
-        
+        if(query.trim().equals("*"))
+            return result + "*"+"from "+(input==null?"null":input.toString());
         String names[] = new String[variable.length];
         for(int ct=0;ct<names.length;ct++)
         {

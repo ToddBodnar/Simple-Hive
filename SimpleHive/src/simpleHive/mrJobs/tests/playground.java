@@ -5,6 +5,10 @@
  */
 package simpleHive.mrJobs.tests;
 
+import compiler.lexer;
+import compiler.parse;
+import compiler.workflow;
+import helpers.settings;
 import simpleHadoop.hadoopDriver;
 import simpleHive.database;
 import simpleHive.mrJobs.leftJoin;
@@ -18,26 +22,35 @@ import simpleHive.table;
  * @author toddbodnar
  */
 public class playground {
-    public static void main(String args[])
+    public static void main(String args[]) throws Exception
     {
         database db = database.getTestDB();
+        
+        settings.currentDB = db;
+        
         query aWhere = new where("_col1 >= 40");
         aWhere.setInput(db.getTable("people"));
         
         hadoopDriver.run(aWhere, true);
-        query aSelect = new select("_col3 as Name,1 as one,_col1,3 as three");
+        query aSelect = new select("name as Name,1 as one,age,3 as three");
         aSelect.setInput(aWhere.getResult());
         //System.out.println(aWhere.getResult());
         hadoopDriver.run(aSelect, true);
-        System.out.println(aSelect.getResult());
+        System.out.println(aSelect.getResult().print());
         
         query join = new leftJoin(db.getTable("ships"),2,0);
         join.setInput(db.getTable("people"));
         hadoopDriver.run(join, true);
         
-        query Select = new select("_col3 as Name,_col5 as Ship,_col1");
+        query Select = new select("name as Name,shipname as Ship,age");
         Select.setInput(join.getResult());
         hadoopDriver.run(Select, true);
-        System.out.println("\n"+Select.getResult());
+        System.out.println("\n"+Select.getResult().print());
+        
+        
+        workflow wf = parse.parse(lexer.lexStr("select    *    from people"));
+        System.out.println(wf);
+        wf.execute();
+        System.out.println(wf.job.getResult().print());
     }
 }

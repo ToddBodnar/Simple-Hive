@@ -48,7 +48,7 @@ public class database {
         r.append("2\0"+"Voyager");
         r.append("3\0"+"Enterprise D");
         
-        t = new table(r,new String[]{"shipID","name"});
+        t = new table(r,new String[]{"shipID","shipname"});
         result.addTable("ships",t);
         return result;
     }
