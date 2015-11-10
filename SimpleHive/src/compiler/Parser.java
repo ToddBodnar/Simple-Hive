@@ -9,6 +9,7 @@ import helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import simpleHive.database;
+import simpleHive.mrJobs.printString;
 import simpleHive.mrJobs.select;
 import simpleHive.mrJobs.where;
 import simpleHive.table;
@@ -35,8 +36,7 @@ public class Parser {
         
         if(tokens.get(0).equalsIgnoreCase("show") && tokens.get(1).equalsIgnoreCase("tables"))
         {
-            System.out.println(settings.currentDB.showTables());
-            return null;
+            return new workflow(new printString(settings.currentDB.showTables()));
         }
         
         if(tokens.get(0).equalsIgnoreCase("describe"))
@@ -44,7 +44,7 @@ public class Parser {
             table t = settings.currentDB.getTable(tokens.get(1));
             if(t==null)
                 throw new Exception("Parse exception (unknown table "+tokens.get(1)+")");
-            System.out.println(t.describe());
+            return new workflow(new printString(t.describe()));
         }
         
         
