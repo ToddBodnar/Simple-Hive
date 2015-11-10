@@ -21,6 +21,7 @@ import simpleHive.table;
 public class where extends query{
 
     booleanTest theQuery;
+    String partialQuery;
     /**
      * given a partial query (the part after the where) of the form:
      * _col1 < "string" AND _col2 = "string" AND _col3 = "string"
@@ -28,9 +29,7 @@ public class where extends query{
      */
     public where(String partialQuery)
     {
-        theQuery = new booleanTest(partialQuery);
-        
-        
+        this.partialQuery = partialQuery; 
     }
     private table input;
     private file result;
@@ -41,7 +40,13 @@ public class where extends query{
 
     @Override
     public void setInput(table in) {
+        
         input = in;
+        
+        
+        
+        theQuery = new booleanTest(partialQuery);
+        
     }
 
     @Override
