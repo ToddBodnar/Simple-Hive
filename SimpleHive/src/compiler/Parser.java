@@ -14,13 +14,13 @@ import simpleHive.mrJobs.where;
 import simpleHive.table;
 
 /**
- * Builds a parse tree from a set of tokens
- * 
- * Simplifying assumption: can just read left to right
- * Later should make this into a 'real' parser
+ * Builds a Parser tree from a set of tokens
+ 
+ Simplifying assumption: can just read left to right
+ Later should make this into a 'real' parser
  * @author toddbodnar
  */
-public class parse {
+public class Parser {
     public static workflow parse(LinkedList<String> tokens) throws Exception
     {
         if(tokens.size()<1)
@@ -31,6 +31,20 @@ public class parse {
             LinkedList<String> partial = (LinkedList<String>) tokens.clone();
             partial.removeFirst();
             return parseSelect(partial);
+        }
+        
+        if(tokens.get(0).equalsIgnoreCase("show") && tokens.get(1).equalsIgnoreCase("tables"))
+        {
+            System.out.println(settings.currentDB.showTables());
+            return null;
+        }
+        
+        if(tokens.get(0).equalsIgnoreCase("describe"))
+        {
+            table t = settings.currentDB.getTable(tokens.get(1));
+            if(t==null)
+                throw new Exception("Parse exception (unknown table "+tokens.get(1)+")");
+            System.out.println(t.describe());
         }
         
         

@@ -6,7 +6,7 @@
 package simpleHive.mrJobs.tests;
 
 import compiler.lexer;
-import compiler.parse;
+import compiler.Parser;
 import compiler.workflow;
 import helpers.settings;
 import simpleHadoop.hadoopDriver;
@@ -48,9 +48,13 @@ public class playground {
         System.out.println("\n"+Select.getResult().print());
         
         
-        workflow wf = parse.parse(lexer.lexStr("select    *    from people"));
+        workflow wf = Parser.parse(lexer.lexStr("select    *    from people"));
         System.out.println(wf);
         wf.execute();
         System.out.println(wf.job.getResult().print());
+        
+        Parser.parse(lexer.lexStr("show \t\tTaBles"));
+        
+        Parser.parse(lexer.lexStr("describe people"));
     }
 }

@@ -60,4 +60,14 @@ public class database {
         
         return "temp table";
     }
+
+    public String showTables() {
+        String result = "Database with "+tables.size()+" table(s)\n-------\n";
+        for(String name:tables.keySet())
+        {
+            result+=name+"\n";
+        }
+        result+="-------";
+        return result;
+    }
 }

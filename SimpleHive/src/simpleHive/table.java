@@ -108,4 +108,12 @@ public class table {
         String name = settings.currentDB.getTableName(this);
         return "Table "+name+" with "+getColNames().length+" columns";
     }
+    
+    public String describe(){
+        String result = toString();
+        result+="\n-------";
+        for(String var:getColNames())
+            result+="\n"+var;
+        return result+"\n-------";
+    }
 }
