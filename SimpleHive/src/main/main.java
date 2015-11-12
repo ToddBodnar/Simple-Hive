@@ -24,9 +24,10 @@ public class main {
     {
         settings.currentDB = database.getTestDB();
         Scanner in = new Scanner(System.in);
+        in.useDelimiter("[\n\r;]+");
         while(in.hasNext())
         {
-            String input = in.nextLine();
+            String input = in.next();
             if(input.length()==0)
                 continue;
             try {
