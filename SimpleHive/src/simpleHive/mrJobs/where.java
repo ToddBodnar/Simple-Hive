@@ -42,8 +42,18 @@ public class where extends query{
     public void setInput(table in) {
         
         input = in;
-        
-        
+       
+        //replace the variables in the query string with the actual column numbers
+        String split[] = partialQuery.split(" ");
+        for(int ct=0;ct<split.length;ct++)
+        {
+            int colNum = input.getColNum(split[ct]);
+            if(colNum!=-1)
+                split[ct] = "_col"+colNum;
+        }
+        partialQuery = split[0];
+        for(int ct=1;ct<split.length;ct++)
+            partialQuery+=" "+split[ct];
         
         theQuery = new booleanTest(partialQuery);
         
