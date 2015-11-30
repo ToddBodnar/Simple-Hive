@@ -46,4 +46,7 @@ public class printString extends query{
         ;
     }
     
+    public table getInput() {
+        return null;
+    }
 }

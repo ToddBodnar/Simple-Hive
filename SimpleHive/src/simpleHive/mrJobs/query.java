@@ -15,9 +15,7 @@ import simpleHive.table;
  *
  * @author toddbodnar
  */
-public abstract class query implements mrJob{
-    public abstract table getResult();
-    public abstract void setInput(table in);
-
+public abstract class query extends mrJob{
     
+    public abstract table getResult();
 }

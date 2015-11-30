@@ -1,2 +1,5 @@
 /SimpleHive/nbproject/private/
 /SimpleHive/build/
+*.jar
+
+*.zip

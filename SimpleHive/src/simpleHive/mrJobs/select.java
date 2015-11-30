@@ -201,4 +201,8 @@ public class select extends query{
         //no map reduce for a select
     }
     
+    public table getInput() {
+        return input;
+    }
+    
 }

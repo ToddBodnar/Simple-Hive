@@ -13,6 +13,7 @@ import simpleHDFS.ramFile;
 import simpleHadoop.context;
 import simpleHadoop.hadoopDriver;
 import simpleHadoop.mrJob;
+import simpleHive.table;
 
 /**
  * init: read in the file and pass each paragraph to a mapper
@@ -20,7 +21,7 @@ import simpleHadoop.mrJob;
  * reducer: count the number of each word, store results in the file wordCount.input
  * @author toddbodnar
  */
-public class wordCount extends tests implements mrJob<String,String,String>{
+public class wordCount extends mrJob<String,String,String>{
 
     public wordCount(file input)
     {
@@ -48,7 +49,7 @@ public class wordCount extends tests implements mrJob<String,String,String>{
     file input;
     file result;
 
-    @Override
+    
     public int test(boolean verbose) {
         ramFile testFile = new laggyRamFile(10);
         for(String s:testData)
@@ -110,8 +111,18 @@ public class wordCount extends tests implements mrJob<String,String,String>{
 "The Hadoop framework itself is mostly written in the Java programming language, with some native code in C and command line utilities written as Shell script. For end-users, though MapReduce Java code is common, any programming language can be used with \"Hadoop Streaming\" to implement the \"map\" and \"reduce\" parts of the user's program.[11] Other related projects expose other higher-level user interfaces." ,
 "Prominent corporate users of Hadoop include Facebook and Yahoo. It can be deployed in traditional on-site datacenters but has also been implemented in public cloud spaces such as Microsoft Azure, Amazon Web Services, Google Compute Engine, and IBM Bluemix." ,
 "Apache Hadoop is a registered trademark of the Apache Software Foundation."};
-    @Override
+   
     public int numTests() {
         return 3;
+    }
+
+    @Override
+    public void setInput(table in) {
+        
+    }
+
+    @Override
+    public table getInput() {
+        return null;
     }
 }

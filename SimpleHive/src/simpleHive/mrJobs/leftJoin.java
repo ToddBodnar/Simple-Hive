@@ -133,4 +133,7 @@ public class leftJoin extends query{
         }
     }
     
+    public table getInput() {
+        return main;
+    }
 }

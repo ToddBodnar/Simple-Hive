@@ -7,31 +7,54 @@ package simpleHadoop;
 
 import java.util.LinkedList;
 import java.util.Set;
+import simpleHDFS.ramFile;
+import simpleHive.table;
 
 /**
  * An interface for implementing a map reduce job, to be run by the 'hadoop' driver.<br>
  * See wordCount.java for an example
  * @author toddbodnar
  */
-public interface mrJob <mapInType,keyType,valueType>{
+public abstract class mrJob <mapInType,keyType,valueType>{
     
     /**
-     * Run first, used to build tasks for the mapper
+     * Run first, used to build tasks for the mapper. By default, emit each line to the mappers
      * @param cont 
      */
-    public void init(context cont);
+    public void init(context cont)
+    {
+        table input = getInput();
+        input.first();
+        while(input.hasNextRow())
+        {
+            cont.add(input.get());
+            input.nextRow();
+        }
+    }
     
     /**
      * Take an input and emit to to key/value pairs to the context
      * @param input
      * @param cont 
      */
-    public void map(mapInType input, context cont);
+    public abstract void map(mapInType input, context cont);
     
     /**
      * Given a set of values for a key, do something with it
      * @param key
      * @param values 
      */
-    public void reduce(keyType key, LinkedList<valueType> values);
+    public abstract void reduce(keyType key, LinkedList<valueType> values);
+    
+    /**
+     * Sets the input for a job
+     * @param in 
+     */
+    public abstract void setInput(table in);
+    
+    /**
+     * Gets the main input for a job
+     * @return 
+     */
+    public abstract table getInput();
 }

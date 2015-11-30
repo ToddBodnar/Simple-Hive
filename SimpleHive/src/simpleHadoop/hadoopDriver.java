@@ -11,6 +11,16 @@ package simpleHadoop;
  */
 public class hadoopDriver {
     private static long lastUpdate = -1;
+    
+    /**
+     * Log the current map-reduce job, but only when a log hasn't been recently executed
+     * @param mapCt
+     * @param reduceCt
+     * @param totalMap
+     * @param totalReduce
+     * @param doingMap
+     * @param verbose 
+     */
     private static void log(int mapCt, int reduceCt, int totalMap, int totalReduce, boolean doingMap, boolean verbose)
     {
         if(System.currentTimeMillis() - lastUpdate < 500)

@@ -30,6 +30,8 @@ public class where extends query{
     public where(String partialQuery)
     {
         this.partialQuery = partialQuery; 
+        
+        result = new ramFile();
     }
     private table input;
     private file result;
@@ -59,16 +61,7 @@ public class where extends query{
         
     }
 
-    @Override
-    public void init(context cont) {
-        result = new ramFile();
-        input.first();
-        while(input.hasNextRow())
-        {
-            cont.add(input.get());
-            input.nextRow();
-        }
-    }
+
 
     @Override
     public void map(Object input, context cont) {
@@ -98,5 +91,8 @@ public class where extends query{
         //there are no reduce operators for a where
     }
 
+    public table getInput() {
+        return input;
+    }
    
 }

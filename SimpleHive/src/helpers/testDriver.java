@@ -36,6 +36,6 @@ public class testDriver {
             System.out.println("WARNING: SOME TESTS FAILED");
     }
 
-    static tests[] toTest = {new ramFileTest(), new laggyRamTest(), new wordCount(null), new testBooleanTest()};
+    static tests[] toTest = {new ramFileTest(), new laggyRamTest(), new testBooleanTest()};
     static String[] names = {"simpleHDFS/ramFile.java","simpleHDFS/laggyRamFile.java","simpleHadoop/tests/wordCount.java", "simpleHive/mrJobs/booleanTests.java"};
 }
