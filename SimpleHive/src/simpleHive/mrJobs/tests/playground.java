@@ -11,6 +11,7 @@ import compiler.workflow;
 import helpers.settings;
 import simpleHadoop.hadoopDriver;
 import simpleHive.database;
+import simpleHive.mrJobs.colStats;
 import simpleHive.mrJobs.leftJoin;
 import simpleHive.mrJobs.query;
 import simpleHive.mrJobs.select;
@@ -56,5 +57,10 @@ public class playground {
         Parser.parse(lexer.lexStr("show \t\tTaBles"));
         
         Parser.parse(lexer.lexStr("describe people"));
+        
+        query stats = new colStats(1,2);//summarize age group by ship number
+        stats.setInput(db.getTable("people"));
+        hadoopDriver.run(stats, true);
+        System.out.println("\n"+stats.getResult().print());
     }
 }
