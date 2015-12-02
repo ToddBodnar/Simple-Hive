@@ -8,6 +8,7 @@ package main;
 import compiler.Parser;
 import compiler.lexer;
 import compiler.workflow;
+import helpers.loadDatabases;
 import helpers.settings;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ import simpleHive.table;
 public class main {
     public static void main(String args[])
     {
-        settings.currentDB = database.getTestDB();
+        settings.currentDB = loadDatabases.battleStarGalacticaGame();
         Scanner in = new Scanner(System.in);
         in.useDelimiter("[\n\r;]+");
         while(in.hasNext())

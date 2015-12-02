@@ -8,6 +8,7 @@ package simpleHive.mrJobs.tests;
 import compiler.lexer;
 import compiler.Parser;
 import compiler.workflow;
+import helpers.loadDatabases;
 import helpers.settings;
 import simpleHadoop.hadoopDriver;
 import simpleHive.database;
@@ -25,7 +26,7 @@ import simpleHive.table;
 public class playground {
     public static void main(String args[]) throws Exception
     {
-        database db = database.getTestDB();
+        database db = loadDatabases.starTrek();
         
         settings.currentDB = db;
         

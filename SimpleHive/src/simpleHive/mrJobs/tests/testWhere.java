@@ -5,6 +5,7 @@
  */
 package simpleHive.mrJobs.tests;
 
+import helpers.loadDatabases;
 import simpleHadoop.hadoopDriver;
 import simpleHive.database;
 import simpleHive.mrJobs.query;
@@ -17,7 +18,7 @@ import simpleHive.mrJobs.where;
 public class testWhere {
     public static void main(String args[])
     {
-        database d = database.getTestDB();
+        database d = loadDatabases.starTrek();
         query q = new where("_col1 >= 40");
         q.setInput(d.getTable("people"));
         hadoopDriver.run(q, true);

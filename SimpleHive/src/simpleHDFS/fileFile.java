@@ -56,7 +56,8 @@ public class fileFile implements file{
     @Override
     public void resetStream() {
         try {
-            in.reset();
+            in.close();
+            in = in = new BufferedReader(new FileReader(theFile));
             next = in.readLine();
             out.flush();
         } catch (IOException ex) {

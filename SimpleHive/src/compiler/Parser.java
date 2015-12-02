@@ -5,6 +5,7 @@
  */
 package compiler;
 
+import helpers.loadDatabases;
 import helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -117,7 +118,7 @@ public class Parser {
     
     public static void main(String args[]) throws Exception
     {
-        settings.currentDB = database.getTestDB();
+        settings.currentDB = loadDatabases.starTrek();
         System.out.println(parse(lexer.lexStr("select 2,name, something from people")));
         System.out.println(parse(lexer.lexStr("select 2,name, something from people where _col1 >_col4")));
     }

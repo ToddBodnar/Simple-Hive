@@ -6,6 +6,7 @@
 package compiler;
 
 import compiler.tokens.*;
+import helpers.loadDatabases;
 import helpers.settings;
 import java.util.LinkedList;
 import simpleHive.database;
@@ -85,7 +86,7 @@ public class lexer {
     
     public static void main(String args[]) throws Exception
     {
-        settings.currentDB = database.getTestDB();
+        settings.currentDB = loadDatabases.starTrek();
         //lex("select 3, 5, z from x;");
         lex("select _col1  , _col2        from      people");
     }
