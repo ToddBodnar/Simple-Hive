@@ -42,7 +42,7 @@ public class table {
     public void nextRow()
     {
         if(storage.hasNext())
-            row = storage.readNextLine().split("\0");
+            row = storage.readNextLine().split(seperator);
     }
     
     public boolean hasNextRow()
@@ -116,4 +116,16 @@ public class table {
             result+="\n"+var;
         return result+"\n-------";
     }
+    
+    public String getSeperator()
+    {
+        return seperator;
+    }
+    
+    public void setSeperator(String sepChar)
+    {
+        seperator = sepChar;
+    }
+    
+    private String seperator = "\0";
 }
