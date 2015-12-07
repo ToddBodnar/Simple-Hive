@@ -7,7 +7,7 @@ package simpleHive.mrJobs;
 
 import java.util.LinkedList;
 import simpleHDFS.file;
-import simpleHadoop.context;
+import simpleHadoop.simpleContext;
 import simpleHadoop.mrJob;
 import simpleHive.table;
 

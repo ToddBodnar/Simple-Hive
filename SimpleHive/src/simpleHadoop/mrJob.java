@@ -15,13 +15,13 @@ import simpleHive.table;
  * See wordCount.java for an example
  * @author toddbodnar
  */
-public abstract class mrJob <mapInType,keyType,valueType>{
+public abstract class mrJob <mapInType,keyType,valueType> implements java.io.Serializable{
     
     /**
      * Run first, used to build tasks for the mapper. By default, emit each line to the mappers
      * @param cont 
      */
-    public void init(context cont)
+    public void init(simpleContext cont)
     {
         table input = getInput();
         input.first();
@@ -33,11 +33,11 @@ public abstract class mrJob <mapInType,keyType,valueType>{
     }
     
     /**
-     * Take an input and emit to to key/value pairs to the context
+     * Take an input and emit to to key/value pairs to the simpleContext
      * @param input
      * @param cont 
      */
-    public abstract void map(mapInType input, context cont);
+    public abstract void map(mapInType input, simpleContext cont);
     
     /**
      * Given a set of values for a key, do something with it

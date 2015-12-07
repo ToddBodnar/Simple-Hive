@@ -10,7 +10,7 @@ import compiler.Parser;
 import compiler.workflow;
 import helpers.loadDatabases;
 import helpers.settings;
-import simpleHadoop.hadoopDriver;
+import simpleHadoop.localMRDriver;
 import simpleHive.database;
 import simpleHive.mrJobs.colStats;
 import simpleHive.mrJobs.leftJoin;
@@ -33,20 +33,20 @@ public class playground {
         query aWhere = new where("_col1 >= 40");
         aWhere.setInput(db.getTable("people"));
         
-        hadoopDriver.run(aWhere, true);
+        localMRDriver.run(aWhere, true);
         query aSelect = new select("name as Name,1 as one,age,3 as three");
         aSelect.setInput(aWhere.getResult());
         //System.out.println(aWhere.getResult());
-        hadoopDriver.run(aSelect, true);
+        localMRDriver.run(aSelect, true);
         System.out.println(aSelect.getResult().print());
         
         query join = new leftJoin(db.getTable("ships"),2,0);
         join.setInput(db.getTable("people"));
-        hadoopDriver.run(join, true);
+        localMRDriver.run(join, true);
         
         query Select = new select("name as Name,shipname as Ship,age");
         Select.setInput(join.getResult());
-        hadoopDriver.run(Select, true);
+        localMRDriver.run(Select, true);
         System.out.println("\n"+Select.getResult().print());
         
         
@@ -61,7 +61,7 @@ public class playground {
         
         query stats = new colStats(1,2);//summarize age group by ship number
         stats.setInput(db.getTable("people"));
-        hadoopDriver.run(stats, true);
+        localMRDriver.run(stats, true);
         System.out.println("\n"+stats.getResult().print());
     }
 }

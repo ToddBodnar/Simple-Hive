@@ -6,7 +6,7 @@
 package compiler;
 
 import java.util.LinkedList;
-import simpleHadoop.hadoopDriver;
+import simpleHadoop.localMRDriver;
 import simpleHive.mrJobs.leftJoin;
 import simpleHive.mrJobs.query;
 
@@ -48,7 +48,7 @@ public class workflow {
             ((leftJoin)job).setOther(getPreReqs().get(1).job.getResult());
         }
         
-        hadoopDriver.run(job, verbose);
+        localMRDriver.run(job, verbose);
         
         executed = true;
     }

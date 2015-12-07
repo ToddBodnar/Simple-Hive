@@ -9,7 +9,7 @@ package simpleHadoop;
  * A driver to run mrJobs.
  * @author toddbodnar
  */
-public class hadoopDriver {
+public class localMRDriver {
     private static long lastUpdate = -1;
     
     /**
@@ -49,7 +49,7 @@ public class hadoopDriver {
      */
     public static void run(mrJob theJob, boolean verbose)
     {
-        context cont = new context();
+        simpleContext cont = new simpleContext();
         //if(verbose)
           //  System.out.println("Init "+theJob.getClass().toString());
         theJob.init(cont);

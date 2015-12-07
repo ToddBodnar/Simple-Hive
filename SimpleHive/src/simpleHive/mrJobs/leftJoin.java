@@ -8,7 +8,7 @@ package simpleHive.mrJobs;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import simpleHDFS.ramFile;
-import simpleHadoop.context;
+import simpleHadoop.simpleContext;
 import simpleHive.table;
 
 /**
@@ -62,7 +62,7 @@ public class leftJoin extends query{
     }
 
     @Override
-    public void init(context cont) {
+    public void init(simpleContext cont) {
         storage = new ramFile();
         main.reset();
         other.reset();
@@ -81,7 +81,7 @@ public class leftJoin extends query{
     }
 
     @Override
-    public void map(Object input, context cont) {
+    public void map(Object input, simpleContext cont) {
         int id = (int)(((Object[])input)[0]);
         Object row[] = (Object[])(((Object[])input)[1]);
         if(id==1)

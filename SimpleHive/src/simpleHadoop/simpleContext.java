@@ -13,10 +13,10 @@ import java.util.LinkedList;
  * A set of helpers for the mrJob and the driver
  * @author toddbodnar
  */
-public class context {
+public class simpleContext {
     HashMap<Object,LinkedList<Object>> data;
     LinkedList<Object> toProcess;
-    context()
+    simpleContext()
     {
         data = new HashMap<Object,LinkedList<Object>>();
         toProcess = new LinkedList<Object>();

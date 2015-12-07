@@ -7,7 +7,7 @@ package simpleHive.mrJobs;
 
 import java.util.LinkedList;
 import simpleHDFS.ramFile;
-import simpleHadoop.context;
+import simpleHadoop.simpleContext;
 import simpleHive.table;
 
 /**
@@ -45,7 +45,7 @@ public class colStats extends query{
 
 
     @Override
-    public void map(Object input, context cont) {
+    public void map(Object input, simpleContext cont) {
         Object row[] = (Object[])input;
         
         String key = "*";

@@ -10,8 +10,8 @@ import java.util.LinkedList;
 import simpleHDFS.file;
 import simpleHDFS.laggyRamFile;
 import simpleHDFS.ramFile;
-import simpleHadoop.context;
-import simpleHadoop.hadoopDriver;
+import simpleHadoop.simpleContext;
+import simpleHadoop.localMRDriver;
 import simpleHadoop.mrJob;
 import simpleHive.table;
 
@@ -29,7 +29,7 @@ public class wordCount extends mrJob<String,String,String>{
     }
 
     @Override
-    public void map(String input, context cont) {
+    public void map(String input, simpleContext cont) {
         for(String s:input.split(" "))
             cont.emit(s.toLowerCase(), 1);
     }
@@ -40,7 +40,7 @@ public class wordCount extends mrJob<String,String,String>{
     }
 
     @Override
-    public void init(context cont) {
+    public void init(simpleContext cont) {
         result = new laggyRamFile(10);
         while(input.hasNext())
             cont.add(input.readNextLine());
@@ -58,7 +58,7 @@ public class wordCount extends mrJob<String,String,String>{
         wordCount job = new wordCount(testFile);
         
         try{
-        hadoopDriver.run(job,true);
+        localMRDriver.run(job,true);
         }catch(Exception e)
         {
             System.out.println(e);

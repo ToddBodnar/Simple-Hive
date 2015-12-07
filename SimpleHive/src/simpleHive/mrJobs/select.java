@@ -7,7 +7,7 @@ package simpleHive.mrJobs;
 
 import java.util.LinkedList;
 import simpleHDFS.ramFile;
-import simpleHadoop.context;
+import simpleHadoop.simpleContext;
 import simpleHive.table;
 
 /**
@@ -110,7 +110,7 @@ public class select extends query{
     }
 
     @Override
-    public void init(context cont) {
+    public void init(simpleContext cont) {
         if(query.trim().equals("*"))
         {
             result = input;
@@ -192,7 +192,7 @@ public class select extends query{
     }
 
     @Override
-    public void map(Object input, context cont) {
+    public void map(Object input, simpleContext cont) {
         //no map reduce for a select
     }
 

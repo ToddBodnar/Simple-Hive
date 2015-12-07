@@ -10,7 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import simpleHDFS.file;
 import simpleHDFS.ramFile;
-import simpleHadoop.context;
+import simpleHadoop.simpleContext;
 import simpleHadoop.mrJob;
 import simpleHive.table;
 
@@ -64,7 +64,7 @@ public class where extends query{
 
 
     @Override
-    public void map(Object input, context cont) {
+    public void map(Object input, simpleContext cont) {
         try {
             if(theQuery.evaluate((Object[])input))
             {
