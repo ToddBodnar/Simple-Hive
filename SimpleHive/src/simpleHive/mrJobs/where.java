@@ -94,5 +94,15 @@ public class where extends query{
     public table getInput() {
         return input;
     }
+    
+    @Override
+    public table getOutput() {
+        return getResult();    
+    }
+
+    @Override
+    public void setOutput(table table) {
+        result = table.getFile();
+    }
    
 }

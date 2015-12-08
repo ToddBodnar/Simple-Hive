@@ -23,7 +23,14 @@ public class mrJobHadoopWrapper{
     {
         public void map(Object key, Text line, Context context)
         {
-            
+            mrJob theJob = null;
+            try {
+                 theJob = (mrJob) helpers.serialString.fromString(context.getConfiguration().get("theMRJob"));
+            } catch (Exception ex) {
+                Logger.getLogger(mrJobHadoopWrapper.class.getName()).log(Level.SEVERE, null, ex);
+               
+            }
+            theJob.map(line, new contextWrapper(context));
         }
         
         private class contextWrapper extends simpleContext
@@ -48,7 +55,29 @@ public class mrJobHadoopWrapper{
     
     public static class reduce extends Reducer<Object,Object,Text,Object>
     {
-        
+        public void reduce(Object key, Text line, Reducer.Context context)
+        {
+            
+        }
+        private class contextWrapper extends simpleContext
+        {
+            public contextWrapper(Reducer.Context theContext)
+            {
+                context = theContext;
+            }
+            public void emit(Object key, Object value)
+            {
+                try {
+                    
+                    context.write(key, value);
+                } catch (IOException ex) {
+                    Logger.getLogger(mrJobHadoopWrapper.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(mrJobHadoopWrapper.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            Reducer.Context context;
+        }
     }
     
     

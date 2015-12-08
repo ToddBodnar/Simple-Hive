@@ -9,7 +9,7 @@ package simpleHDFS;
  * Interface for a file stream
  * @author toddbodnar
  */
-public interface file {
+public interface file{
 
     public String readNextLine();
     
@@ -18,4 +18,6 @@ public interface file {
     public void resetStream();
     
     public void append(String s);
+    
+    public String getLocation();
 }

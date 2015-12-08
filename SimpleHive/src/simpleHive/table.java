@@ -128,4 +128,8 @@ public class table {
     }
     
     private String seperator = "\0";
+
+    public file getFile() {
+        return storage;
+    }
 }

@@ -91,4 +91,14 @@ public class colStats extends query{
     public table getInput() {
         return inTable;
     }
+
+    @Override
+    public table getOutput() {
+        return result;    
+    }
+
+    @Override
+    public void setOutput(table table) {
+        result = table;
+    }
 }

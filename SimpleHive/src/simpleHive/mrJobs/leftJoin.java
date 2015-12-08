@@ -136,4 +136,15 @@ public class leftJoin extends query{
     public table getInput() {
         return main;
     }
+
+    @Override
+    public table getOutput() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setOutput(table table) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
 }

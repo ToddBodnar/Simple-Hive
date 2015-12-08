@@ -125,4 +125,14 @@ public class wordCount extends mrJob<String,String,String>{
     public table getInput() {
         return null;
     }
+
+    @Override
+    public table getOutput() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setOutput(table table) {
+        result = table.getFile();
+    }
 }

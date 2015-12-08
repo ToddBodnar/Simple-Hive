@@ -47,5 +47,10 @@ public class ramFile implements file{
     public boolean hasNext() {
         return iterator<data.size();
     }
+
+    @Override
+    public String getLocation() {
+        return null;
+    }
     
 }

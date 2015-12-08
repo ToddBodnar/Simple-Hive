@@ -7,84 +7,59 @@ package simpleHDFS;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 
 /**
- * A file object represented by a file on the HD
+ *
  * @author toddbodnar
  */
-public class fileFile implements file{
+public class hdfsFile extends fileFile{
 
-    protected fileFile()
+    public hdfsFile(Path theLocation)
     {
+        location = theLocation;
         
-    }
-    public fileFile(String inFile)
-    {
-        this(new File(inFile));
-    }
-    public fileFile(File inFile)
-    {
-        theFile = inFile;
         try {
-            in = new BufferedReader(new FileReader(theFile));
-            out = new BufferedWriter(new FileWriter(theFile,true));
+            FileSystem fs = FileSystem.get(new Configuration());
+            in = new BufferedReader(new InputStreamReader(fs.open(location)));
+            out = new BufferedWriter(new OutputStreamWriter(fs.append(location)));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    @Override
-    public String readNextLine() {
-        String toReturn = next;
-        try {
-            next = in.readLine();
-        } catch (IOException ex) {
-            Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return toReturn;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return next != null;
-    }
+   
 
     @Override
     public void resetStream() {
+
         try {
             in.close();
-            in = new BufferedReader(new FileReader(theFile));
+            FileSystem fs = FileSystem.get(new Configuration());
+            in = new BufferedReader(new InputStreamReader(fs.open(location)));
             next = in.readLine();
             out.flush();
-        } catch (IOException ex) {
+        } catch (FileNotFoundException ex) {
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-    }
-
-    @Override
-    public void append(String s) {
-        try {
-            out.append(s);
         } catch (IOException ex) {
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    private File theFile;
-    protected BufferedReader in;
-    protected BufferedWriter out;
-    protected String next;
 
     @Override
     public String getLocation() {
-        return theFile.toString();
+        return location.toString();
     }
+    private Path location;
 }

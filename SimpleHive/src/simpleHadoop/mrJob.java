@@ -52,9 +52,15 @@ public abstract class mrJob <mapInType,keyType,valueType> implements java.io.Ser
      */
     public abstract void setInput(table in);
     
+    public abstract void setOutput(table table);
+    
     /**
      * Gets the main input for a job
      * @return 
      */
     public abstract table getInput();
+
+    public abstract table getOutput();
+
+    
 }

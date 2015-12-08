@@ -13,4 +13,5 @@ import simpleHive.database;
  */
 public class settings {
     public static database currentDB = null;
+    public static boolean local = true;
 }

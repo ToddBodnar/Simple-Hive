@@ -9,6 +9,8 @@ import helpers.loadDatabases;
 import helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
+import simpleHadoop.distributedHadoopDriver;
+import simpleHadoop.tests.wordCount;
 import simpleHive.database;
 import simpleHive.mrJobs.printString;
 import simpleHive.mrJobs.select;

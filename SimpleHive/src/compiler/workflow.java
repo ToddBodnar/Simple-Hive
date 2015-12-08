@@ -5,7 +5,12 @@
  */
 package compiler;
 
+import helpers.settings;
+import java.io.IOException;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import simpleHadoop.distributedHadoopDriver;
 import simpleHadoop.localMRDriver;
 import simpleHive.mrJobs.leftJoin;
 import simpleHive.mrJobs.query;
@@ -48,7 +53,19 @@ public class workflow {
             ((leftJoin)job).setOther(getPreReqs().get(1).job.getResult());
         }
         
-        localMRDriver.run(job, verbose);
+        if(settings.local)
+            localMRDriver.run(job, verbose);
+        else
+            try {
+            
+                distributedHadoopDriver.run(job,verbose);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(workflow.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(workflow.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(workflow.class.getName()).log(Level.SEVERE, null, ex);
+            }
         
         executed = true;
     }
