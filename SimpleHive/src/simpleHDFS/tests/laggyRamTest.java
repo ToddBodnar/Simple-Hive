@@ -5,9 +5,9 @@
  */
 package simpleHDFS.tests;
 
-import helpers.tests;
-import simpleHDFS.laggyRamFile;
-import simpleHDFS.ramFile;
+import com.toddbodnar.simpleHive.helpers.tests;
+import com.toddbodnar.simpleHive.IO.laggyRamFile;
+import com.toddbodnar.simpleHive.IO.ramFile;
 
 /**
  *

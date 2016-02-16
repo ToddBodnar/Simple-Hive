@@ -5,15 +5,15 @@
  */
 package simpleHadoop.tests;
 
-import helpers.tests;
+import com.toddbodnar.simpleHive.helpers.tests;
 import java.util.LinkedList;
-import simpleHDFS.file;
-import simpleHDFS.laggyRamFile;
-import simpleHDFS.ramFile;
-import simpleHadoop.simpleContext;
-import simpleHadoop.localMRDriver;
-import simpleHadoop.mrJob;
-import simpleHive.table;
+import com.toddbodnar.simpleHive.IO.file;
+import com.toddbodnar.simpleHive.IO.laggyRamFile;
+import com.toddbodnar.simpleHive.IO.ramFile;
+import com.toddbodnar.simpleHadoop.simpleContext;
+import com.toddbodnar.simpleHadoop.localMRDriver;
+import com.toddbodnar.simpleHadoop.mrJob;
+import com.toddbodnar.simpleHive.metastore.table;
 
 /**
  * init: read in the file and pass each paragraph to a mapper

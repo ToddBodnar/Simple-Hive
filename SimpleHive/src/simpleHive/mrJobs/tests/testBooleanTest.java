@@ -5,12 +5,12 @@
  */
 package simpleHive.mrJobs.tests;
 
-import helpers.tests;
+import com.toddbodnar.simpleHive.helpers.tests;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import simpleHDFS.ramFile;
-import simpleHive.mrJobs.booleanTest;
-import simpleHive.table;
+import com.toddbodnar.simpleHive.IO.ramFile;
+import com.toddbodnar.simpleHive.subQueries.booleanTest;
+import com.toddbodnar.simpleHive.metastore.table;
 
 /**
  *

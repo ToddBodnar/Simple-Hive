@@ -5,12 +5,12 @@
  */
 package simpleHive.mrJobs.tests;
 
-import helpers.loadDatabases;
-import simpleHadoop.localMRDriver;
-import simpleHive.database;
-import simpleHive.mrJobs.query;
-import simpleHive.mrJobs.select;
-import simpleHive.mrJobs.where;
+import com.toddbodnar.simpleHive.helpers.loadDatabases;
+import com.toddbodnar.simpleHadoop.localMRDriver;
+import com.toddbodnar.simpleHive.metastore.database;
+import com.toddbodnar.simpleHive.subQueries.query;
+import com.toddbodnar.simpleHive.subQueries.select;
+import com.toddbodnar.simpleHive.subQueries.where;
 
 /**
  *

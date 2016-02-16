@@ -5,19 +5,19 @@
  */
 package simpleHive.mrJobs.tests;
 
-import compiler.lexer;
-import compiler.Parser;
-import compiler.workflow;
-import helpers.loadDatabases;
-import helpers.settings;
-import simpleHadoop.localMRDriver;
-import simpleHive.database;
-import simpleHive.mrJobs.colStats;
-import simpleHive.mrJobs.leftJoin;
-import simpleHive.mrJobs.query;
-import simpleHive.mrJobs.select;
-import simpleHive.mrJobs.where;
-import simpleHive.table;
+import com.toddbodnar.simpleHive.compiler.lexer;
+import com.toddbodnar.simpleHive.compiler.Parser;
+import com.toddbodnar.simpleHive.compiler.workflow;
+import com.toddbodnar.simpleHive.helpers.loadDatabases;
+import com.toddbodnar.simpleHive.helpers.settings;
+import com.toddbodnar.simpleHadoop.localMRDriver;
+import com.toddbodnar.simpleHive.metastore.database;
+import com.toddbodnar.simpleHive.subQueries.colStats;
+import com.toddbodnar.simpleHive.subQueries.leftJoin;
+import com.toddbodnar.simpleHive.subQueries.query;
+import com.toddbodnar.simpleHive.subQueries.select;
+import com.toddbodnar.simpleHive.subQueries.where;
+import com.toddbodnar.simpleHive.metastore.table;
 
 /**
  *
