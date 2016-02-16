@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
-import com.toddbodnar.simpleHadoop.mrJob;
+import com.toddbodnar.simpleHadoop.MapReduceJob;
 import com.toddbodnar.simpleHive.metastore.table;
 
 /**

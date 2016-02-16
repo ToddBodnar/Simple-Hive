@@ -24,10 +24,10 @@ public class distributedHadoopDriver {
 
     /**
      * Runs a job
-     * @param theJob the mrJob to be run
+     * @param theJob the MapReduceJob to be run
      * @param verbose if true, output progress information
      */
-    public static void run(mrJob theJob, boolean verbose) throws IOException, InterruptedException, ClassNotFoundException
+    public static void run(MapReduceJob theJob, boolean verbose) throws IOException, InterruptedException, ClassNotFoundException
     {
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, theJob.toString());

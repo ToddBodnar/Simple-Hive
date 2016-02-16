@@ -9,7 +9,7 @@ package com.toddbodnar.simpleHadoop;
  * A driver to run mrJobs.
  * @author toddbodnar
  */
-public class localMRDriver {
+public class SimpleHadoopDriver {
     private static long lastUpdate = -1;
     
     /**
@@ -44,17 +44,19 @@ public class localMRDriver {
     
     /**
      * Runs a job
-     * @param theJob the mrJob to be run
+     * @param theJob the MapReduceJob to be run
      * @param verbose if true, output progress information
      */
-    public static void run(mrJob theJob, boolean verbose)
+    public static void run(MapReduceJob theJob, boolean verbose)
     {
         simpleContext cont = new simpleContext();
         //if(verbose)
           //  System.out.println("Init "+theJob.getClass().toString());
-        theJob.init(cont);
+        theJob.inputFormat(cont);
         int mapCt=0;
         int reduceCt=0;
+        
+        theJob.init_map(cont);
         //if(verbose)
           //  System.out.println("Map "+theJob.getClass().toString());
         for(Object o:cont.toProcess)
@@ -63,8 +65,11 @@ public class localMRDriver {
             mapCt++;
             log(mapCt,reduceCt,cont.toProcess.size(),1,true,verbose);
         }
+        
+        theJob.end_map(cont);
         //if(verbose)
           //  System.out.println("Reduce "+theJob.getClass().toString());
+        theJob.init_reduce(cont);
         for(Object o:cont.data.keySet())
         {
             theJob.reduce(o, cont.data.get(o));
@@ -74,6 +79,7 @@ public class localMRDriver {
         
         lastUpdate = -1;
         log(mapCt,reduceCt,cont.toProcess.size(),cont.data.keySet().size(),false,verbose);
+        theJob.end_reduce(cont);
 
     }
 }

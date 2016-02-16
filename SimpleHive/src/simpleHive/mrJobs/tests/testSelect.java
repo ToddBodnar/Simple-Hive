@@ -6,7 +6,7 @@
 package simpleHive.mrJobs.tests;
 
 import com.toddbodnar.simpleHive.helpers.loadDatabases;
-import com.toddbodnar.simpleHadoop.localMRDriver;
+import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.query;
 import com.toddbodnar.simpleHive.subQueries.select;
@@ -22,7 +22,7 @@ public class testSelect {
         database d = loadDatabases.starTrek();
         query q = new select("_col3 as Name,1 as one,_col1,3 as three");
         q.setInput(d.getTable("people"));
-        localMRDriver.run(q, true);
+        SimpleHadoopDriver.run(q, true);
         System.out.println(q.getResult());
     }
 }

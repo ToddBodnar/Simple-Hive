@@ -32,7 +32,7 @@ public class printString extends query{
     }
 
     @Override
-    public void init(simpleContext cont) {
+    public void inputFormat(simpleContext cont) {
         ;
     }
 

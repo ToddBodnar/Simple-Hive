@@ -23,9 +23,9 @@ public class mrJobHadoopWrapper{
     {
         public void map(Object key, Text line, Context context)
         {
-            mrJob theJob = null;
+            MapReduceJob theJob = null;
             try {
-                 theJob = (mrJob) com.toddbodnar.simpleHive.helpers.serialString.fromString(context.getConfiguration().get("theMRJob"));
+                 theJob = (MapReduceJob) com.toddbodnar.simpleHive.helpers.serialString.fromString(context.getConfiguration().get("theMRJob"));
             } catch (Exception ex) {
                 Logger.getLogger(mrJobHadoopWrapper.class.getName()).log(Level.SEVERE, null, ex);
                

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.toddbodnar.simpleHadoop.distributedHadoopDriver;
-import com.toddbodnar.simpleHadoop.localMRDriver;
+import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
 import com.toddbodnar.simpleHive.subQueries.leftJoin;
 import com.toddbodnar.simpleHive.subQueries.query;
 
@@ -54,7 +54,7 @@ public class workflow {
         }
         
         if(settings.local)
-            localMRDriver.run(job, verbose);
+            SimpleHadoopDriver.run(job, verbose);
         else
             try {
             

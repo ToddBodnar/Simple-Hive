@@ -11,17 +11,17 @@ import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHive.IO.laggyRamFile;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
-import com.toddbodnar.simpleHadoop.localMRDriver;
-import com.toddbodnar.simpleHadoop.mrJob;
+import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
+import com.toddbodnar.simpleHadoop.MapReduceJob;
 import com.toddbodnar.simpleHive.metastore.table;
 
 /**
- * init: read in the file and pass each paragraph to a mapper
- * map: split each paragraph apart and send each word to a reducer
- * reducer: count the number of each word, store results in the file wordCount.input
+ * inputFormat: read in the file and pass each paragraph to a mapper
+ map: split each paragraph apart and send each word to a reducer
+ reducer: count the number of each word, store results in the file wordCount.input
  * @author toddbodnar
  */
-public class wordCount extends mrJob<String,String,String>{
+public class wordCount extends MapReduceJob<String,String,String>{
 
     public wordCount(file input)
     {
@@ -40,7 +40,7 @@ public class wordCount extends mrJob<String,String,String>{
     }
 
     @Override
-    public void init(simpleContext cont) {
+    public void inputFormat(simpleContext cont) {
         result = new laggyRamFile(10);
         while(input.hasNext())
             cont.add(input.readNextLine());
@@ -58,7 +58,7 @@ public class wordCount extends mrJob<String,String,String>{
         wordCount job = new wordCount(testFile);
         
         try{
-        localMRDriver.run(job,true);
+        SimpleHadoopDriver.run(job,true);
         }catch(Exception e)
         {
             System.out.println(e);

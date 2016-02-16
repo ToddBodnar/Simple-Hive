@@ -8,14 +8,14 @@ package com.toddbodnar.simpleHive.subQueries;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHadoop.simpleContext;
-import com.toddbodnar.simpleHadoop.mrJob;
+import com.toddbodnar.simpleHadoop.MapReduceJob;
 import com.toddbodnar.simpleHive.metastore.table;
 
 /**
  *
  * @author toddbodnar
  */
-public abstract class query extends mrJob{
+public abstract class query extends MapReduceJob{
     
     public abstract table getResult();
 }

@@ -62,7 +62,7 @@ public class leftJoin extends query{
     }
 
     @Override
-    public void init(simpleContext cont) {
+    public void inputFormat(simpleContext cont) {
         storage = new ramFile();
         main.reset();
         other.reset();

@@ -110,7 +110,7 @@ public class select extends query{
     }
 
     @Override
-    public void init(simpleContext cont) {
+    public void inputFormat(simpleContext cont) {
         if(query.trim().equals("*"))
         {
             result = input;
