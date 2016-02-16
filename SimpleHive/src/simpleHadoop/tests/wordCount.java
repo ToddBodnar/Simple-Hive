@@ -26,6 +26,7 @@ public class wordCount extends MapReduceJob<String,String,Long>{
     public wordCount(file input)
     {
         this.input=input;
+        result = new laggyRamFile(10);
     }
 
     @Override
@@ -44,7 +45,7 @@ public class wordCount extends MapReduceJob<String,String,Long>{
 
     @Override
     public void inputFormat(simpleContext cont) {
-        result = new laggyRamFile(10);
+        
         while(input.hasNext())
             cont.add(input.readNextLine());
     }
