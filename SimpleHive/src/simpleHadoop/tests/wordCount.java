@@ -21,7 +21,7 @@ import com.toddbodnar.simpleHive.metastore.table;
  reducer: count the number of each word, store results in the file wordCount.input
  * @author toddbodnar
  */
-public class wordCount extends MapReduceJob<String,String,String>{
+public class wordCount extends MapReduceJob<String,String,Long>{
 
     public wordCount(file input)
     {
@@ -31,12 +31,15 @@ public class wordCount extends MapReduceJob<String,String,String>{
     @Override
     public void map(String input, simpleContext cont) {
         for(String s:input.split(" "))
-            cont.emit(s.toLowerCase(), 1);
+            cont.emit(s.toLowerCase(), 1l);
     }
 
     @Override
-    public void reduce(String key, LinkedList<String> values) {
-        result.append(key+"\0"+values.size());
+    public void reduce(String key, LinkedList<Long> values) {
+        long count = 0;
+        for(long val:values)
+            count+=val;
+        result.append(key+"\0"+count);
     }
 
     @Override
