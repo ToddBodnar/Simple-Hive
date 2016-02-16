@@ -39,7 +39,7 @@ public class mrJobHadoopWrapper{
             {
                 context = theContext;
             }
-            public void emit(Object key, Object value)
+            public void emit_map(Object key, Object value)
             {
                 try {
                     context.write(key, value);
@@ -65,7 +65,7 @@ public class mrJobHadoopWrapper{
             {
                 context = theContext;
             }
-            public void emit(Object key, Object value)
+            public void emit_map(Object key, Object value)
             {
                 try {
                     

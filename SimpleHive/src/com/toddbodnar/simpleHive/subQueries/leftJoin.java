@@ -70,13 +70,13 @@ public class leftJoin extends query{
         {
             main.nextRow();
             Object o[] = main.get();
-            cont.add(new Object[]{1,o});
+            cont.add_input_format(new Object[]{1,o});
         }
         while(other.hasNextRow())
         {
             other.nextRow();
             Object o[] = other.get();
-            cont.add(new Object[]{2,o});
+            cont.add_input_format(new Object[]{2,o});
         }
     }
 
@@ -86,11 +86,11 @@ public class leftJoin extends query{
         Object row[] = (Object[])(((Object[])input)[1]);
         if(id==1)
         {
-            cont.emit(row[mainKey], new Object[]{1,row});
+            cont.emit_map(row[mainKey], new Object[]{1,row});
         }
         else
         {
-            cont.emit(row[otherKey], new Object[]{2,row});
+            cont.emit_map(row[otherKey], new Object[]{2,row});
         }
     }
 

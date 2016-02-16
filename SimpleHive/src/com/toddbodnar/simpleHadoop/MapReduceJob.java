@@ -18,7 +18,7 @@ import com.toddbodnar.simpleHive.metastore.table;
 public abstract class MapReduceJob <mapInType,keyType,valueType> implements java.io.Serializable{
     
     /**
-     * Run first, used to build tasks for the mapper. By default, emit each line to the mappers
+     * Run first, used to build tasks for the mapper. By default, emit_map each line to the mappers
      * @param cont 
      */
     public void inputFormat(simpleContext cont)
@@ -27,7 +27,7 @@ public abstract class MapReduceJob <mapInType,keyType,valueType> implements java
         input.first();
         while(input.hasNextRow())
         {
-            cont.add(input.get());
+            cont.add_input_format(input.get());
             input.nextRow();
         }
     }
@@ -57,7 +57,7 @@ public abstract class MapReduceJob <mapInType,keyType,valueType> implements java
     public void end_reduce(simpleContext cont){;}
     
     /**
-     * Take an input and emit to to key/value pairs to the simpleContext
+     * Take an input and emit_map to to key/value pairs to the simpleContext
      * @param input
      * @param cont 
      */

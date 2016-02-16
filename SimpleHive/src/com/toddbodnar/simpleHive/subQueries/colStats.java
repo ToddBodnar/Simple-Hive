@@ -54,7 +54,7 @@ public class colStats extends query{
             key = row[groupByCol].toString();
         }
         
-        cont.emit(key, row[statsCol]);
+        cont.emit_map(key, row[statsCol]);
     }
 
     @Override

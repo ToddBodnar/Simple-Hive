@@ -32,7 +32,7 @@ public class wordCount extends MapReduceJob<String,String,Long>{
     @Override
     public void map(String input, simpleContext cont) {
         for(String s:input.split(" "))
-            cont.emit(s.toLowerCase(), 1l);
+            cont.emit_map(s.toLowerCase(), 1l);
     }
 
     @Override
@@ -47,7 +47,7 @@ public class wordCount extends MapReduceJob<String,String,Long>{
     public void inputFormat(simpleContext cont) {
         
         while(input.hasNext())
-            cont.add(input.readNextLine());
+            cont.add_input_format(input.readNextLine());
     }
     
     file input;
