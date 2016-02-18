@@ -5,6 +5,16 @@
  */
 package com.toddbodnar.simpleHadoop;
 
+import com.toddbodnar.simpleHive.IO.file;
+import com.toddbodnar.simpleHive.helpers.pair;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.Reducer;
+
 /**
  * A driver to run mrJobs.
  * @author toddbodnar
@@ -13,6 +23,7 @@ public class SimpleHadoopDriver {
     private static long lastUpdate = -1;
     
     /**
+     * @deprecated 
      * Log the current map-reduce job, but only when a log hasn't been recently executed
      * @param mapCt
      * @param reduceCt
@@ -47,39 +58,31 @@ public class SimpleHadoopDriver {
      * @param theJob the MapReduceJob to be run
      * @param verbose if true, output progress information
      */
-    public static void run(MapReduceJob theJob, boolean verbose)
+    public static void run(MapReduceJob theJob, boolean verbose) throws IOException, InterruptedException
     {
-        simpleContext cont = new simpleContext();
+        simpleContext cont = new simpleContext(theJob.getRecordReader());
         //if(verbose)
           //  System.out.println("Init "+theJob.getClass().toString());
-        theJob.inputFormat(cont);
-        int mapCt=0;
-        int reduceCt=0;
         
-        theJob.init_map(cont);
-        //if(verbose)
-          //  System.out.println("Map "+theJob.getClass().toString());
-        for(Object o:cont.toProcess)
-        {
-            theJob.map(o, cont);
-            mapCt++;
-            log(mapCt,reduceCt,cont.toProcess.size(),1,true,verbose);
-        }
+        RecordReader records = theJob.getRecordReader();
         
-        theJob.end_map(cont);
+        records.initialize(null, null);
+        
+        cont.getMapContext();
+        
+        theJob.getMapper().run((Mapper.Context) cont.getMapContext());
+        
         //if(verbose)
           //  System.out.println("Reduce "+theJob.getClass().toString());
-        theJob.init_reduce(cont);
-        for(Object o:cont.data.keySet())
-        {
-            theJob.reduce(o, cont.data.get(o));
-            reduceCt++;
-            log(mapCt,reduceCt,cont.toProcess.size(),cont.data.keySet().size(),false,verbose);
-        }
-        
-        lastUpdate = -1;
-        log(mapCt,reduceCt,cont.toProcess.size(),cont.data.keySet().size(),false,verbose);
-        theJob.end_reduce(cont);
+        theJob.getReducer().run((Reducer.Context) cont.getReduceContext());
 
+        file out = theJob.getOutput().getFile();
+        
+        for(Object p:cont.getResults())
+        {
+            pair thePair = (pair)p;
+           
+            out.append(thePair.getKey()+"\0"+thePair.getValue().toString());
+        }
     }
 }

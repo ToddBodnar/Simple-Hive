@@ -29,18 +29,20 @@ import org.apache.hadoop.mapreduce.TaskAttemptID;
  */
 public class simpleContext<mapInKey, mapInValue, key, value,reduceOutKey,reduceOutValue>{
     HashMap<key,LinkedList<value>> data;
-    LinkedList<pair<mapInKey,mapInValue>> toProcess;
+    LinkedList<pair> toProcess;
     LinkedList<pair<reduceOutKey,reduceOutValue>> results;
     HashMap<String,String> config;
     MapContext mapperContext;
-    simpleContext()
+    ReduceContext reducerContext;
+    simpleContext(RecordReader recordReader) throws InterruptedException, IOException
     {
-        data = new HashMap<key,LinkedList<value>>();
-        toProcess = new LinkedList<pair<mapInKey,mapInValue>>();
-        results = new LinkedList<pair<reduceOutKey,reduceOutValue>>();
+        data = new HashMap<>();
+        toProcess = new LinkedList<>();
+        results = new LinkedList<>();
         
-        config = new HashMap<String,String>();
-        mapperContext = new mapContext();
+        config = new HashMap<>();
+        mapperContext = new mapContext(recordReader);
+        reducerContext = new reduceContext();
     }
     
     public MapContext<mapInKey,mapInValue,key,value> getMapContext()
@@ -48,11 +50,17 @@ public class simpleContext<mapInKey, mapInValue, key, value,reduceOutKey,reduceO
         return mapperContext;
     }
     
+    public ReduceContext<key,value,reduceOutKey,reduceOutValue> getReduceContext()
+    {
+        return reducerContext;
+    }
+    
     private class mapContext extends MapContext<mapInKey, mapInValue, key, value> {
 
-        public mapContext() {
-            super(null, null, null, null, null, null, null);
+        public mapContext(RecordReader records) {
+            super(null, null, records, null, null, null, null);
         }
+        
 
         @Override
         public void write(key k, value v) {
@@ -65,6 +73,8 @@ public class simpleContext<mapInKey, mapInValue, key, value,reduceOutKey,reduceO
             }
             set.add(v);
         }
+        
+        
 
     }
     
