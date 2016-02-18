@@ -15,15 +15,38 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.metastore.table;
+import org.apache.hadoop.conf.Configuration;
 
 /**
  *
  * @author toddbodnar
  */
 public class main {
+    public static void init(String args[])
+    {
+        System.out.println("Hello and welcome to Simple Hive (todo: replace intro)");
+        System.out.println("Trying to connect to default hadoop system");
+        try
+        {
+            Configuration conf = new Configuration();//TODO: test this on hadoop instance
+            settings.conf = conf;
+            settings.local = false;
+            System.out.println("Connection successful!");
+            System.out.println(settings.conf);
+        }
+        catch(Error ex)
+        {
+            System.out.println("Unable to connect, continuing on local mode.");
+            settings.local = true;
+        }
+        
+        settings.currentDB = loadDatabases.battleStarGalacticaGame();
+        System.out.println("Using database metastore: "+settings.currentDB.toString());
+    }
     public static void main(String args[])
     {
-        settings.currentDB = loadDatabases.battleStarGalacticaGame();
+        init(args);
+        
         Scanner in = new Scanner(System.in);
         in.useDelimiter("[\n\r;]+");
         while(in.hasNext())
