@@ -5,25 +5,82 @@
  */
 package com.toddbodnar.simpleHadoop;
 
+import com.toddbodnar.simpleHive.helpers.pair;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.MapContext;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.apache.hadoop.mapreduce.OutputCommitter;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.RecordWriter;
+import org.apache.hadoop.mapreduce.ReduceContext;
+import org.apache.hadoop.mapreduce.StatusReporter;
+import org.apache.hadoop.mapreduce.TaskAttemptID;
 
 /**
  * A set of helpers for the mrJob and the driver
  * @author toddbodnar
  */
-public class simpleContext{
-    HashMap<Object,LinkedList<Object>> data;
-    LinkedList<Object> toProcess;
+public class simpleContext<mapInKey, mapInValue, key, value,reduceOutKey,reduceOutValue>{
+    HashMap<key,LinkedList<value>> data;
+    LinkedList<pair<mapInKey,mapInValue>> toProcess;
+    LinkedList<pair<reduceOutKey,reduceOutValue>> results;
     HashMap<String,String> config;
+    MapContext mapperContext;
     simpleContext()
     {
-        data = new HashMap<Object,LinkedList<Object>>();
-        toProcess = new LinkedList<Object>();
+        data = new HashMap<key,LinkedList<value>>();
+        toProcess = new LinkedList<pair<mapInKey,mapInValue>>();
+        results = new LinkedList<pair<reduceOutKey,reduceOutValue>>();
+        
         config = new HashMap<String,String>();
+        mapperContext = new mapContext();
     }
     
+    public MapContext<mapInKey,mapInValue,key,value> getMapContext()
+    {
+        return mapperContext;
+    }
+    
+    private class mapContext extends MapContext<mapInKey, mapInValue, key, value> {
+
+        public mapContext() {
+            super(null, null, null, null, null, null, null);
+        }
+
+        @Override
+        public void write(key k, value v) {
+            LinkedList<value> set;
+            if (data.containsKey(k)) {
+                set = data.get(k);
+            } else {
+                set = new LinkedList<value>();
+                data.put(k, set);
+            }
+            set.add(v);
+        }
+
+    }
+    
+    private class reduceContext extends ReduceContext<key, value,reduceOutKey,reduceOutValue> {
+
+        public reduceContext() throws IOException, InterruptedException {
+            super(null, null, null, null,null,null,null,null,null,null,null);
+        }
+
+        @Override
+        public void write(reduceOutKey k, reduceOutValue v) {
+            
+            results.add(new pair(k,v));
+        }
+
+    }
     /**
      * Set something in the context's config
      * @param key
@@ -48,26 +105,14 @@ public class simpleContext{
      * Adds a job for a mapper to process
      * @param job 
      */
-    public void add_input_format(Object job)
+    public void add_input_format(mapInKey key, mapInValue value)
     {
-        toProcess.add(job);
+        toProcess.add(new pair<mapInKey,mapInValue>(key,value));
     }
     
-    /**
-     * Takes the output of a mapper
-     * @param key
-     * @param value 
-     */
-    public void emit_map(Object key, Object value)
+    public LinkedList getResults()
     {
-        LinkedList<Object> set;
-        if(data.containsKey(key))
-            set = data.get(key);
-        else
-        {
-            set = new LinkedList<Object>();
-            data.put(key, set);
-        }
-        set.add(value);
+        return results;
     }
+   
 }
