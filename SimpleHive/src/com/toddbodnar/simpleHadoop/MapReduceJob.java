@@ -9,74 +9,43 @@ import java.util.LinkedList;
 import java.util.Set;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHive.metastore.table;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * An interface for implementing a map reduce job, to be run by the 'hadoop' driver.<br>
  * See wordCount.java for an example
  * @author toddbodnar
  */
-public abstract class MapReduceJob <mapInType,keyType,valueType> implements java.io.Serializable{
+public abstract class MapReduceJob <mapInKey,mapInValue,key,value,reduceOutKey,reduceOutValue>{
     
     /**
-     * Run first, used to build tasks for the mapper. By default, emit_map each line to the mappers
-     * @param cont 
+     * Build your mapreduce.RecordReader here, converts files (or similar) into key,value pairs for the mapper
      */
-    public void inputFormat(simpleContext cont)
-    {
-        table input = getInput();
-        input.first();
-        while(input.hasNextRow())
-        {
-            cont.add_input_format(input.get());
-            input.nextRow();
-        }
-    }
+    public abstract RecordReader<mapInKey,mapInValue> getRecordReader();
     
     /**
-     * Called before any mapers are processed
-     * @param cont 
+     * Build your mapreduce.Mapper here, takes in records of form <mapInKey,mapInValue> and maps them to something of the form <key,value>
      */
-    public void init_map(simpleContext cont){;}
+    public abstract Mapper<mapInKey,mapInValue,key,value> getMapper();
     
     /**
-     * Called after any mappers are run
-     * @param cont 
+     * Build your mapreduce.Reducer here, takes in set of <value> based on a key <key> outputs to files of the format <reduceOutKey,reduceOutValue>
      */
-    public void end_map(simpleContext cont){;}
+    public abstract Reducer<key,value,reduceOutKey,reduceOutValue> getReducer();
     
     /**
-     * Called before any reducers are processed
-     * @param cont 
-     */
-    public void init_reduce(simpleContext cont){;}
-    
-    /**
-     * Called after any reducers are run
-     * @param cont 
-     */
-    public void end_reduce(simpleContext cont){;}
-    
-    /**
-     * Take an input and emit_map to to key/value pairs to the simpleContext
-     * @param input
-     * @param cont 
-     */
-    public abstract void map(mapInType input, simpleContext cont);
-    
-    /**
-     * Given a set of values for a key, do something with it
-     * @param key
-     * @param values 
-     */
-    public abstract void reduce(keyType key, LinkedList<valueType> values);
-    
-    /**
-     * Sets the input for a job
+     * Sets a "table" to be the input
      * @param in 
      */
     public abstract void setInput(table in);
     
-    public abstract void setOutput(table table);
+    /**
+     * Sets a table to be written to
+     * @param out 
+     */
+    public abstract void setOutput(table out);
     
     /**
      * Gets the main input for a job
@@ -84,6 +53,10 @@ public abstract class MapReduceJob <mapInType,keyType,valueType> implements java
      */
     public abstract table getInput();
 
+    /**
+     * Gets the main output for a job
+     * @return 
+     */
     public abstract table getOutput();
 
     
