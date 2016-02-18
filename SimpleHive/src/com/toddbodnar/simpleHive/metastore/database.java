@@ -14,9 +14,17 @@ import com.toddbodnar.simpleHive.IO.ramFile;
  */
 public class database {
     private HashMap<String,table> tables;
-    public database()
+    private String name;
+    public database(String name)
     {
         tables = new HashMap<String,table>();
+        if(name==null)
+            name = super.toString();
+        this.name = name;
+    }
+    public database()
+    {
+        this(null);
     }
     public void addTable(String name, table t)
     {
@@ -27,7 +35,10 @@ public class database {
         return tables.get(name);
     }
     
-    
+    public String toString()
+    {
+        return name;
+    }
     
 
     String getTableName(table table) {
