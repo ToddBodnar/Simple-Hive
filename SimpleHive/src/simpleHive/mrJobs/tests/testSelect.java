@@ -21,7 +21,7 @@ public class testSelect {
     public static void main(String args[]) throws IOException, InterruptedException
     {
         database d = loadDatabases.starTrek();
-        query q = new select("Name as Name,1,age,3 as three");
+        query q = new select("*");//new select("Name as Name,1,age,3 as three");
         q.setInput(d.getTable("people"));
         SimpleHadoopDriver.run(q, true);
         System.out.println(q.getOutput().print());

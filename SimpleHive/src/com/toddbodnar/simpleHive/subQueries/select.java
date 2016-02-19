@@ -77,6 +77,7 @@ public class select extends query<Text,Text>{
         if(query.trim().equals("*"))
         {
             passThrough = true;
+            names = getInput().getColNames();
             return;
         }
         String split[] = query.split(",");
@@ -207,7 +208,11 @@ public class select extends query<Text,Text>{
                     public void map(IntWritable key, Text line, Context cont) throws IOException, InterruptedException
                 {
                     if(passThrough)
-                        cont.write(line,new Text(""));
+                {
+                    cont.write(line,new Text(""));
+                    return;
+                }
+                    
                     Object next[] = line.toString().split(getInput().getSeperator());
             String result = "";
             boolean first = true;
@@ -252,6 +257,7 @@ public class select extends query<Text,Text>{
         if(super.getOutput()!=null)
             return super.getOutput();
         table result = new table(new ramFile(),names);
+        result.setSeperator(getInput().getSeperator());
         super.setOutput(result);
         return result;
     }

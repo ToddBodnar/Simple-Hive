@@ -13,12 +13,17 @@ import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHadoop.MapReduceJob;
 import com.toddbodnar.simpleHive.metastore.table;
+import java.io.IOException;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * 
  * @author toddbodnar
  */
-public class where extends query{
+public class where extends query<Text,Text>{
 
     booleanTest theQuery;
     String partialQuery;
@@ -33,23 +38,16 @@ public class where extends query{
         
         result = new ramFile();
     }
-    private table input;
     private file result;
-    @Override
-    public table getResult() {
-        return new table(result,input.getColNames());
-    }
+    
 
-    @Override
-    public void setInput(table in) {
+    public void parseInput() {
         
-        input = in;
-       
         //replace the variables in the query string with the actual column numbers
         String split[] = partialQuery.split(" ");
         for(int ct=0;ct<split.length;ct++)
         {
-            int colNum = input.getColNum(split[ct]);
+            int colNum = getInput().getColNum(split[ct]);
             if(colNum!=-1)
                 split[ct] = "_col"+colNum;
         }
@@ -63,46 +61,61 @@ public class where extends query{
 
 
 
+
+
     @Override
-    public void map(Object input, simpleContext cont) {
-        try {
-            if(theQuery.evaluate((Object[])input))
-            {
-                String res = "";
-                boolean first = true;
-                for(Object o:(Object[])input)
+    public Reducer getReducer() {
+        return new Reducer()
                 {
-                    if(first)
-                        first=false;
-                    else
-                        res+="\0";
-                    res+=o;
-                    //System.out.println(o);
-                }
-                result.append(res);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(where.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Override
-    public void reduce(Object key, LinkedList values) {
-        //there are no reduce operators for a where
-    }
-
-    public table getInput() {
-        return input;
+                    //just default behavior, since all processing is done map side
+                };
     }
     
+
+ 
     @Override
-    public table getOutput() {
-        return getResult();    
+    public Mapper<IntWritable, Text, Text, Text> getMapper() {
+        return new Mapper<IntWritable, Text, Text, Text>()
+                {
+                    
+                public void map(IntWritable key, Text line, Mapper.Context cont) throws IOException, InterruptedException
+                {
+                        try {
+                            if(theQuery.evaluate((Object[])line.toString().split(getInput().getSeperator())))
+                            {
+                                cont.write(line,"");
+                            }           } catch (Exception ex) {
+                            Logger.getLogger(where.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                }
+                };}
+
+ 
+
+    @Override
+    public Class getKeyType() {
+        return Text.class;
     }
 
     @Override
-    public void setOutput(table table) {
-        result = table.getFile();
+    public Class getValueType() {
+        return Text.class;
     }
    
+    public void setInput(table in)
+    {
+        super.setInput(in);
+        parseInput();
+    }
+    
+        public table getOutput()
+    {
+        if(super.getOutput()!=null)
+            return super.getOutput();
+        table result = new table(new ramFile(),getInput().getColNames());
+        result.setSeperator(getInput().getSeperator());
+        super.setOutput(result);
+        return result;
+    }
+        
 }
