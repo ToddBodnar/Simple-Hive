@@ -87,4 +87,9 @@ public class fileFile implements file{
     public String getLocation() {
         return theFile.toString();
     }
+
+    @Override
+    public String toJson() {
+        return "{type:fileFile,file:"+theFile.toString()+"}";
+    }
 }

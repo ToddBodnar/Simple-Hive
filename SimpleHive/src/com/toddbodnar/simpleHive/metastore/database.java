@@ -47,4 +47,17 @@ public class database {
         result+="-------";
         return result;
     }
+    
+    public String toJson()
+    {
+        String result = "{tables:[";
+        for(String name:tables.keySet())
+        {
+            result+=tables.get(name).toJson(name)+",";
+        }
+        if(!tables.isEmpty())
+            result = result.substring(0,result.length()-1);//truncate trailing comma
+        result+="]}";
+        return result;
+    }
 }
