@@ -52,5 +52,17 @@ public class ramFile implements file{
     public String getLocation() {
         return null;
     }
+
+    @Override
+    public String toJson() {
+        String result = "{type:ramFile,lines:[";
+        for(String line:data)
+        {
+            result+="\""+line+"\",";
+        }
+        result = result.substring(0, result.length()-1); //remove the tailing comma
+        result+="]}";
+        return result;
+    }
     
 }

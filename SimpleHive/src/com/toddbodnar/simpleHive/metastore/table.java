@@ -24,6 +24,19 @@ public class table {
         colNames = names;
         first();
     }
+    
+    public String toJson(String name)
+    {
+        String result = "{name:\""+name+"\",columns:[";
+        for(int col=0;col<colNames.length;col++)
+        {
+            result+="\""+colNames[col]+"\"";
+            if(col<colNames.length-1)
+                result+=",";
+        }
+        result+="],datastore:"+storage.toJson()+"}";
+        return result;
+    }
     private String colNames[],row[];
     private file storage;
     public String getColName(int col)

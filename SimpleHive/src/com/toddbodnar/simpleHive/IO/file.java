@@ -11,13 +11,30 @@ package com.toddbodnar.simpleHive.IO;
  */
 public interface file{
 
+    /**
+     * Returns the next line of the file
+     * @return 
+     */
     public String readNextLine();
     
+    /**
+     * Are we NOT at the end of the file
+     * @return 
+     */
     public boolean hasNext();
     
+    /**
+     * Return to the beginning of the stream
+     */
     public void resetStream();
     
     public void append(String s);
     
     public String getLocation();
+
+    /**
+     * For writing the file's metadata to a file
+     * @return 
+     */
+    public String toJson();
 }
