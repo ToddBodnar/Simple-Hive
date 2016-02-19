@@ -9,8 +9,10 @@ import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHadoop.MapReduceJob;
+import com.toddbodnar.simpleHadoop.tableRecordReader;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
+import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -22,15 +24,15 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
  *
  * @author toddbodnar
  */
-public abstract class query<key,value> extends MapReduceJob<LongWritable,Text,key,value,Object,Text>{
+public abstract class query<key,value> extends MapReduceJob<IntWritable,Text,key,value,Object,Text>{
     
     /**
      * By default, just process the table line-by-line (row-by-row)
      * @return 
      */
-    public RecordReader<LongWritable,Text> getRecordReader()
+    public RecordReader<IntWritable,Text> getRecordReader()
     {
-        return new LineRecordReader();
+        return new tableRecordReader(getInput());
     }
 
     public void setInput(table in)

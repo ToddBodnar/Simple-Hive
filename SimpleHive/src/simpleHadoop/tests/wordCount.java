@@ -50,7 +50,7 @@ public class wordCount extends MapReduceJob<IntWritable,Text,Text,LongWritable,T
         job.setInput(new table(testFile,null));
         job.setOutput(new table(new ramFile(),null));
         
-        SimpleHadoopDriver.run(job,true,Text.class,LongWritable.class);
+        SimpleHadoopDriver.run(job,true);
         
         
         int score = tests.score(verbose,!crash,"Running job");
@@ -160,5 +160,15 @@ public class wordCount extends MapReduceJob<IntWritable,Text,Text,LongWritable,T
                 context.write(key, new LongWritable(sum));
             }
         };
+    }
+
+    @Override
+    public Class getKeyType() {
+        return Text.class;
+    }
+
+    @Override
+    public Class getValueType() {
+        return LongWritable.class;
     }
 }

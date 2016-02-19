@@ -8,55 +8,41 @@ package com.toddbodnar.simpleHive.subQueries;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHive.metastore.table;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  *
  * @author toddbodnar
  */
-public class printString extends query{
+public class printString extends query<Object,Object>{
 
     private String toPrint;
     public printString(String in)
     {
         toPrint = in;
         System.out.println(in);
-    }
-    @Override
-    public table getResult() {
-        return null;
+        super.setInput(null);
     }
 
     @Override
-    public void setInput(table in) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Mapper getMapper() {
+        return new Mapper();    }
+
+    @Override
+    public Reducer getReducer() {
+        return new Reducer();    }
+
+    @Override
+    public Class getKeyType() {
+        return Object.class;
     }
 
     @Override
-    public void inputFormat(simpleContext cont) {
-        ;
-    }
-
-    @Override
-    public void map(Object input, simpleContext cont) {
-        ;
-    }
-
-    @Override
-    public void reduce(Object key, LinkedList values) {
-        ;
+    public Class getValueType() {
+        return Object.class;
     }
     
-    public table getInput() {
-        return null;
-    }
 
-    @Override
-    public table getOutput() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setOutput(table table) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+   
 }

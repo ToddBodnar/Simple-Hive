@@ -58,9 +58,9 @@ public class SimpleHadoopDriver {
      * @param theJob the MapReduceJob to be run
      * @param verbose if true, output progress information
      */
-    public static void run(MapReduceJob theJob, boolean verbose, Class keyClass, Class valueClass) throws IOException, InterruptedException
+    public static void run(MapReduceJob theJob, boolean verbose) throws IOException, InterruptedException
     {
-        simpleContext cont = new simpleContext(theJob.getRecordReader(),keyClass,valueClass);
+        simpleContext cont = new simpleContext(theJob.getRecordReader(),theJob.getKeyType(),theJob.getValueType());
         //if(verbose)
           //  System.out.println("Init "+theJob.getClass().toString());
         

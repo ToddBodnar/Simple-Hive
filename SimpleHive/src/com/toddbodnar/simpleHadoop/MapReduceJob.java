@@ -59,5 +59,7 @@ public abstract class MapReduceJob <mapInKey,mapInValue,key,value,reduceOutKey,r
      */
     public abstract table getOutput();
 
+    public abstract Class getKeyType();
     
+    public abstract Class getValueType();
 }

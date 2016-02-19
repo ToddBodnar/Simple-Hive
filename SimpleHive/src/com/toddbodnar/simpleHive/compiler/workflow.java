@@ -46,17 +46,18 @@ public class workflow {
         //do something here to combine result from preReqs
         
         if(getPreReqs().size()>0)
-            job.setInput(getPreReqs().get(0).job.getResult());
+            job.setInput(getPreReqs().get(0).job.getOutput());
         
         if(job.getClass().equals(leftJoin.class))
         {
-            ((leftJoin)job).setOther(getPreReqs().get(1).job.getResult());
+            ((leftJoin)job).setOther(getPreReqs().get(1).job.getOutput());
         }
         
-        if(settings.local)
+        try {
+            if(settings.local)
             SimpleHadoopDriver.run(job, verbose);
         else
-            try {
+            
             
                 distributedHadoopDriver.run(job,verbose);
             } catch (InterruptedException ex) {
