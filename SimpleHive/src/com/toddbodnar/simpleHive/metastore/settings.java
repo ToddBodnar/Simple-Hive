@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.toddbodnar.simpleHive.helpers;
-
-import com.toddbodnar.simpleHive.metastore.database;
+package com.toddbodnar.simpleHive.metastore;
 
 /**
  *
  * @author toddbodnar
  */
 public class settings {
-    public static database currentDB = null;
-    public static String currentDBName = "default";
-    public static boolean local = true;
+    public static final String METASTORE_META_LOCATION = "metastores";
 }
