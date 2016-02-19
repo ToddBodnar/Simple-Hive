@@ -78,7 +78,7 @@ public class fileFile implements file{
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    private File theFile;
+    protected File theFile;
     protected BufferedReader in;
     protected BufferedWriter out;
     protected String next;
