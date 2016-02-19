@@ -56,4 +56,9 @@ public class laggyRamFile extends ramFile{
         lag();
         super.append(s);
     }
+    
+    public String toJson()
+    {
+        return "{type:laggyRamFile,lag:"+maxLagMiliSeconds+",inner:"+super.toJson()+"}";
+    }
 }

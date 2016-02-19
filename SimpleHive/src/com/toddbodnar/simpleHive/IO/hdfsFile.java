@@ -61,5 +61,10 @@ public class hdfsFile extends fileFile{
     public String getLocation() {
         return location.toString();
     }
+    
+    public String toJson() {
+        return "{type:hdfsFile,file:"+location.toString()+"}";
+    }
+    
     private Path location;
 }

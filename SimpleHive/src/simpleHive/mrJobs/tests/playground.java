@@ -29,8 +29,8 @@ public class playground {
         database db = loadDatabases.starTrek();
         
         settings.currentDB = db;
-        
-        query aWhere = new where("_col1 >= 40");
+        System.out.println(db.getTable("people").toJson("people"));
+        /*query aWhere = new where("_col1 >= 40");
         aWhere.setInput(db.getTable("people"));
         
         SimpleHadoopDriver.run(aWhere, true);
@@ -62,6 +62,6 @@ public class playground {
         query stats = new colStats(1,2);//summarize age group by ship number
         stats.setInput(db.getTable("people"));
         SimpleHadoopDriver.run(stats, true);
-        System.out.println("\n"+stats.getResult().print());
+        System.out.println("\n"+stats.getResult().print());*/
     }
 }
