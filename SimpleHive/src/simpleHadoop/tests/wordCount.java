@@ -18,6 +18,9 @@ import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -28,7 +31,7 @@ import org.apache.hadoop.mapreduce.Reducer;
  reducer: count the number of each word, store results in the file wordCount.input
  * @author toddbodnar
  */
-public class wordCount extends MapReduceJob<Object,String,String,Long,String,Long>{
+public class wordCount extends MapReduceJob<IntWritable,Text,Text,LongWritable,Text,LongWritable>{
 
 
 
@@ -47,7 +50,7 @@ public class wordCount extends MapReduceJob<Object,String,String,Long,String,Lon
         job.setInput(new table(testFile,null));
         job.setOutput(new table(new ramFile(),null));
         
-        SimpleHadoopDriver.run(job,true);
+        SimpleHadoopDriver.run(job,true,Text.class,LongWritable.class);
         
         
         int score = tests.score(verbose,!crash,"Running job");
@@ -129,17 +132,17 @@ public class wordCount extends MapReduceJob<Object,String,String,Long,String,Lon
     }
 
     @Override
-    public RecordReader<Object, String> getRecordReader() {
+    public RecordReader<IntWritable, Text> getRecordReader() {
         return new tableRecordReader(getInput());
     }
 
     @Override
-    public Mapper<Object, String, String, Long> getMapper() {
-        return new Mapper<Object, String, String, Long>() {
-            public void map(Object key, String value, Context context) throws IOException, InterruptedException {
-                value = value.toLowerCase();
-                for (String token : value.split(" ")) {
-                        context.write(token, 1l);
+    public Mapper<IntWritable, Text, Text, LongWritable> getMapper() {
+        return new Mapper<IntWritable, Text, Text, LongWritable>() {
+            public void map(IntWritable key, Text value, Context context) throws IOException, InterruptedException {
+                //value = value.toLowerCase();
+                for (String token : value.toString().toLowerCase().split(" ")) {
+                        context.write(new Text(token), new LongWritable(1l));
                     
                 }
             }
@@ -147,14 +150,14 @@ public class wordCount extends MapReduceJob<Object,String,String,Long,String,Lon
     }
 
     @Override
-    public Reducer<String, Long, String, Long> getReducer() {
-        return new Reducer<String, Long, String, Long>() {
-            public void reduce(String key, Iterable<Long> values, Context context) throws IOException, InterruptedException {
+    public Reducer<Text, LongWritable,Text, LongWritable> getReducer() {
+        return new Reducer<Text, LongWritable,Text, LongWritable>() {
+            public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
                 long sum = 0;
-                for (Long l : values) {
-                    sum += l;
+                for (LongWritable l : values) {
+                    sum += l.get();
                 }
-                context.write(key, sum);
+                context.write(key, new LongWritable(sum));
             }
         };
     }
