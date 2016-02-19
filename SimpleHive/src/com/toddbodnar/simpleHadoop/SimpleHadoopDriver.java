@@ -6,7 +6,9 @@
 package com.toddbodnar.simpleHadoop;
 
 import com.toddbodnar.simpleHive.IO.file;
+import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHive.helpers.pair;
+import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -73,6 +75,8 @@ public class SimpleHadoopDriver {
           //  System.out.println("Reduce "+theJob.getClass().toString());
         theJob.getReducer().run((Reducer.Context) cont.getReduceContext());
 
+        
+        
         file out = theJob.getOutput().getFile();
         
         for(Object p:cont.getResults())

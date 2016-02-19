@@ -11,18 +11,19 @@ import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.query;
 import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
+import java.io.IOException;
 
 /**
  *
  * @author toddbodnar
  */
 public class testSelect {
-    public static void main(String args[])
+    public static void main(String args[]) throws IOException, InterruptedException
     {
         database d = loadDatabases.starTrek();
-        query q = new select("_col3 as Name,1 as one,_col1,3 as three");
+        query q = new select("Name as Name,1,age,3 as three");
         q.setInput(d.getTable("people"));
         SimpleHadoopDriver.run(q, true);
-        System.out.println(q.getResult());
+        System.out.println(q.getOutput().print());
     }
 }
