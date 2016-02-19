@@ -27,6 +27,11 @@ public class tableRecordReader extends RecordReader<IntWritable,Text>{
     boolean nextLineEnd;
     public tableRecordReader(table t)
     {
+        if(t==null)
+        {
+            nextLineEnd=true;
+            return;
+        }
         theTable = t;
         theFile = t.getFile();
         t.reset();
