@@ -17,7 +17,7 @@ import com.toddbodnar.simpleHive.metastore.table;
 public class loadDatabases {
     public static database starTrek()
     {
-        database result = new database();
+        database result = new database("Star Trek");
         ramFile r = new ramFile();
         r.append("1234\0"+"23\0"+"1\0"+"Kirk");
         r.append("2345\0"+"45\0"+"1\0"+"Spock");
@@ -47,7 +47,7 @@ public class loadDatabases {
      */
     public static database battleStarGalacticaGame()
     {
-        database result = new database();
+        database result = new database("BSG Game Info");
         ramFile r = new ramFile();
         r.append("0\0Base Game");
         r.append("1\0Pegasus");
