@@ -13,23 +13,19 @@ import java.util.List;
  *
  * @author toddbodnar
  */
-public class variableList implements token {
+public class expression implements token{
 
     @Override
     public boolean isA(String string) {
         return true;
-        //return string.toLowerCase().startsWith("_col");
     }
 
     @Override
     public List<token[]> expansions() {
         LinkedList<token[]> result = new LinkedList<token[]>();
-        result.add(new token[]{new stringToken()});
-        result.add(new token[]{new variableList(), new comma(), new variableList()});
-        result.add(new token[]{ new as(), new stringToken()});
-        result.add(new token[]{ new as(), new stringToken(),new comma(), new variableList()});
+        result.add(new token[]{new select_token()});
+        //result.add(new token[]{new variableList(), new from(), new leftJoin()});
         return result;
     }
-
     
 }

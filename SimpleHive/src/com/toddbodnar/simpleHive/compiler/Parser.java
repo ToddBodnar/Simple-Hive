@@ -10,12 +10,17 @@ import com.toddbodnar.simpleHive.helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHadoop.distributedHadoopDriver;
+import com.toddbodnar.simpleHive.compiler.tokens.select_token;
 import simpleHadoop.tests.wordCount;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.printString;
 import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
 import com.toddbodnar.simpleHive.metastore.table;
+import java.text.ParseException;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Builds a Parser tree from a set of tokens
@@ -124,4 +129,67 @@ public class Parser {
         System.out.println(parse(lexer.lexStr("select 2,name, something from people")));
         System.out.println(parse(lexer.lexStr("select 2,name, something from people where _col1 >_col4")));
     }
+    
+    private boolean match(token expected)
+    {
+        if(! expected.isA(tokens[token_itr]))
+        {
+            return false;
+            //throw new ParseException("Expected "+expected+" got "+tokens[token_itr],token_itr);
+        }
+        return true;
+    }
+    
+    public boolean validate(String tokens[])
+    {
+        token_itr = 0;
+        this.tokens = tokens;
+ 
+            if(match(new select_token()))
+            {
+                return validate(new select_token());
+            }
+            return false;
+        
+    }
+    
+    private boolean validate( token current)
+    {
+        if(current.expansions().isEmpty())
+            return validate(current);
+        
+        System.out.println("testing "+current.getClass().getSimpleName()+" at space "+token_itr);
+        
+        for(token[] paths:current.expansions())
+        {
+            boolean match = true;
+            int current_token = token_itr;
+            for(token t:paths)
+            {
+                match = match &(match(t) && validate(t));
+                token_itr++;
+                    
+            }
+            token_itr = current_token;
+            if(match)
+            {
+                System.out.print("found expansion:");
+                
+                
+            }
+            else
+                System.out.print("no expansion for");
+            for(token t:paths)
+                    System.out.print(" "+t.getClass().getSimpleName());
+                System.out.println("based on "+current.getClass().getSimpleName());
+                
+            if(match)
+                return true;
+        }
+        return false;
+    }
+    
+    String next = null;
+    String []tokens = null;
+    int token_itr = 0;
 }

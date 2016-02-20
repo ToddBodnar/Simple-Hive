@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author toddbodnar
  */
-public class select implements token{
+public class select_token implements token{
 
     @Override
     public boolean isA(String string) {
@@ -23,8 +23,8 @@ public class select implements token{
     @Override
     public List<token[]> expansions() {
         LinkedList<token[]> result = new LinkedList<token[]>();
-        result.add(new token[]{new variableList(), new from(), new table()});
-        result.add(new token[]{new variableList(), new from(), new leftJoin()});
+        result.add(new token[]{new stringToken("select"),new variableList(), new from(), new table()});
+        result.add(new token[]{new stringToken("select"),new variableList(), new from(), new leftJoin()});
         return result;
     }
 

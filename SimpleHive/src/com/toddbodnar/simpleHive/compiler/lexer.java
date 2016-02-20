@@ -6,7 +6,7 @@
 package com.toddbodnar.simpleHive.compiler;
 
 import com.toddbodnar.simpleHive.compiler.tokens.variableList;
-import com.toddbodnar.simpleHive.compiler.tokens.select;
+import com.toddbodnar.simpleHive.compiler.tokens.select_token;
 import com.toddbodnar.simpleHive.compiler.tokens.comma;
 import com.toddbodnar.simpleHive.compiler.tokens.from;
 import com.toddbodnar.simpleHive.compiler.tokens.table;
@@ -86,12 +86,12 @@ public class lexer {
         return result;
     }
     
-    public static token[] allTokens = new token[]{new select(),new comma(),new from(),new variableList(),new table()};
+    public static token[] allTokens = new token[]{new select_token(),new comma(),new from(),new variableList(),new table()};
     
     public static void main(String args[]) throws Exception
     {
         settings.currentDB = loadDatabases.starTrek();
-        //lex("select 3, 5, z from x;");
+        //lex("select_token 3, 5, z from x;");
         lex("select _col1  , _col2        from      people");
     }
 }
