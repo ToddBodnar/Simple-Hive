@@ -50,7 +50,7 @@ public class workflow {
         
         if(job.getClass().equals(leftJoin.class))
         {
-            ((leftJoin)job).setOther(getPreReqs().get(1).job.getOutput());
+            ((leftJoin)job).setOtherInput(getPreReqs().get(1).job.getOutput());
         }
         
         try {

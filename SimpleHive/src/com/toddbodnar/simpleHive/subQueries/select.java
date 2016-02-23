@@ -200,12 +200,12 @@ public class select extends query<Text,Text>{
 
     @Override
     public Mapper getMapper() {
-        return new Mapper<IntWritable,Text,Text,Text>()
+        return new Mapper<IntWritable[],Text,Text,Text>()
                 {
                     {
                         parseInput();
                     }
-                    public void map(IntWritable key, Text line, Context cont) throws IOException, InterruptedException
+                    public void map(IntWritable key[], Text line, Context cont) throws IOException, InterruptedException
                 {
                     if(passThrough)
                 {

@@ -9,6 +9,7 @@ import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHive.helpers.pair;
 import com.toddbodnar.simpleHive.metastore.table;
+import com.toddbodnar.simpleHive.subQueries.leftJoin;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -62,12 +63,18 @@ public class SimpleHadoopDriver {
      */
     public static void run(MapReduceJob theJob, boolean verbose) throws IOException, InterruptedException
     {
-        simpleContext cont = new simpleContext(theJob.getRecordReader(),theJob.getKeyType(),theJob.getValueType());
+        tableRecordReader records = (tableRecordReader) theJob.getRecordReader();
+        simpleContext cont = new simpleContext(records,theJob.getKeyType(),theJob.getValueType());
+        
         //if(verbose)
           //  System.out.println("Init "+theJob.getClass().toString());
         
+        if(theJob.getClass().equals(leftJoin.class))
+        {
+            records.addMoreTables(((leftJoin)theJob).getOtherInput());
+        }
         
-        
+        records.initialize(null, null);
         
         theJob.getMapper().run((Mapper.Context) cont.getMapContext());
         

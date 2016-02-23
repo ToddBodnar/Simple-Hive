@@ -29,7 +29,8 @@ public class distributedHadoopDriver {
      */
     public static void run(MapReduceJob theJob, boolean verbose) throws IOException, InterruptedException, ClassNotFoundException
     {
-        Configuration conf = new Configuration();
+        //TODO: replace this
+        /*Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, theJob.toString());
         job.setJarByClass(distributedHadoopDriver.class);
         
@@ -48,6 +49,6 @@ public class distributedHadoopDriver {
         
         job.waitForCompletion(verbose);
         theJob.setOutput(new table(new hdfsFile(out), theJob.getOutput().getColNames()));
-        
+        */
     }
 }

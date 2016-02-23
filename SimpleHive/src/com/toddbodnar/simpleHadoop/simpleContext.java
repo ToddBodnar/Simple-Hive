@@ -44,6 +44,7 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
     map.Context mapperContext;
     ReduceContext reducerContext;
     Configuration theConfiguration;
+    RecordReader theRecordReader;
 
     simpleContext(RecordReader recordReader, Class keyClass, Class valueClass) throws InterruptedException, IOException {
         toProcess = new LinkedList<>();
@@ -51,11 +52,13 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
         results = new LinkedList<>();
 
         theConfiguration = new Configuration();
+        theRecordReader = recordReader;
         mapperContext = new map().get(recordReader, theConfiguration);
         reducerContext = new reduce().get(theConfiguration,data,keyClass,valueClass);
 
+        
     }
-
+    
     public MapContext<mapInKey, mapInValue, key, value> getMapContext() {
         return mapperContext;
     }

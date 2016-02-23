@@ -24,13 +24,13 @@ import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
  *
  * @author toddbodnar
  */
-public abstract class query<key,value> extends MapReduceJob<IntWritable,Text,key,value,Object,Text>{
+public abstract class query<key,value> extends MapReduceJob<IntWritable[],Text,key,value,Object,Text>{
     
     /**
      * By default, just process the table line-by-line (row-by-row)
      * @return 
      */
-    public RecordReader<IntWritable,Text> getRecordReader()
+    public RecordReader<IntWritable[],Text> getRecordReader()
     {
         return new tableRecordReader(getInput());
     }

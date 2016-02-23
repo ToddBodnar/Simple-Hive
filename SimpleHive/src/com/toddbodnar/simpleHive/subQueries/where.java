@@ -74,11 +74,11 @@ public class where extends query<Text,Text>{
 
  
     @Override
-    public Mapper<IntWritable, Text, Text, Text> getMapper() {
-        return new Mapper<IntWritable, Text, Text, Text>()
+    public Mapper<IntWritable[], Text, Text, Text> getMapper() {
+        return new Mapper<IntWritable[], Text, Text, Text>()
                 {
                     
-                public void map(IntWritable key, Text line, Mapper.Context cont) throws IOException, InterruptedException
+                public void map(IntWritable key[], Text line, Mapper.Context cont) throws IOException, InterruptedException
                 {
                         try {
                             if(theQuery.evaluate((Object[])line.toString().split(getInput().getSeperator())))

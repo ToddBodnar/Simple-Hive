@@ -26,8 +26,8 @@ public class hdfsFileTest {
     @Test
     public void testToJson() {
         System.out.println("toJson");
-        hdfsFile instance = new hdfsFile(new Path("http://java.sun.com/j2se/1.3/"));
-        String expResult = "{type:hdfsFile,location:\"datalocation\"}";
+        hdfsFile instance = new hdfsFile(new Path("file:///java.sun.com/j2se/1.3"));
+        String expResult = "{type:hdfsFile,file:file:/java.sun.com/j2se/1.3}";
         String result = instance.toJson();
         assertEquals(expResult, result);
     }

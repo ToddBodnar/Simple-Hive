@@ -31,7 +31,7 @@ import org.apache.hadoop.mapreduce.Reducer;
  reducer: count the number of each word, store results in the file wordCount.input
  * @author toddbodnar
  */
-public class wordCount extends MapReduceJob<IntWritable,Text,Text,LongWritable,Text,LongWritable>{
+public class wordCount extends MapReduceJob<IntWritable[],Text,Text,LongWritable,Text,LongWritable>{
 
 
 
@@ -132,17 +132,17 @@ public class wordCount extends MapReduceJob<IntWritable,Text,Text,LongWritable,T
     }
 
     @Override
-    public RecordReader<IntWritable, Text> getRecordReader() {
+    public RecordReader<IntWritable[], Text> getRecordReader() {
         return new tableRecordReader(getInput());
     }
 
     @Override
-    public Mapper<IntWritable, Text, Text, LongWritable> getMapper() {
-        return new Mapper<IntWritable, Text, Text, LongWritable>() {
-            public void map(IntWritable key, Text value, Context context) throws IOException, InterruptedException {
+    public Mapper<IntWritable[], Text, Text, LongWritable> getMapper() {
+        return new Mapper<IntWritable[], Text, Text, LongWritable>() {
+            public void map(IntWritable key[], Text value, Context context) throws IOException, InterruptedException {
                 //value = value.toLowerCase();
                 for (String token : value.toString().toLowerCase().split(" ")) {
-                        context.write(new Text(token), new LongWritable(1l));
+                        context.write(new Text(token), new LongWritable(1));
                     
                 }
             }
