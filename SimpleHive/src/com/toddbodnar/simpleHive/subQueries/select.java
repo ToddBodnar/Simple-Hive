@@ -9,19 +9,24 @@ import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHive.metastore.table;
+import java.io.IOException;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  *
  * @author toddbodnar
  */
-public class select extends query{
+public class select extends query<Text,Text>{
 
     private boolean variable[];
     private Object value[];
     private String names[];
     private String query;
-    table result;
-    table input;
+    private boolean passThrough = false;
+
     /**
      * 
      * @param toRetain A string of comma seperated values to retain, either _coln, for column n, or an object, or "x as y" for an object x called y
@@ -29,6 +34,7 @@ public class select extends query{
     public select(String toRetain)
     {
         query = toRetain;
+        
         /**
          *  //this code assumes a preparsed variable list, moved this down to the setInput command to have a JIT processing
          * String split[] = toRetain.split(",");
@@ -63,19 +69,17 @@ public class select extends query{
             }
         }**/
     }
-    @Override
-    public table getResult() {
-        return result;
-    }
 
-    @Override
-    public void setInput(table in) {
+
+    public void parseInput() {
         //no map reduce for a select
-        input = in;
         
         if(query.trim().equals("*"))
+        {
+            passThrough = true;
+            names = getInput().getColNames();
             return;
-        
+        }
         String split[] = query.split(",");
         variable = new boolean[split.length];
         value = new Object[split.length];
@@ -96,32 +100,120 @@ public class select extends query{
                 names[ct]=split[ct].substring(start+4).trim();
                 split[ct] = split[ct].substring(0, start).trim();
             }
-            if(in.getColNum(split[ct].trim())!=-1)
+            if(getInput().getColNum(split[ct].trim())!=-1)
             {
                 variable[ct] = true;
-                value[ct] = in.getColNum(split[ct].trim());
+                value[ct] = getInput().getColNum(split[ct].trim());
+                if(names[ct]==null)
+                    names[ct] = split[ct].trim();
             }
             else
             {
                 variable[ct] = false;
                 value[ct] = split[ct];
+                if(names[ct]==null)
+                    names[ct] = ""+value[ct];
             }
         }
     }
 
-    @Override
-    public void inputFormat(simpleContext cont) {
+//    public void inputFormat(simpleContext cont) {
+//        if(query.trim().equals("*"))
+//        {
+//            result = input;
+//            return;
+//        }
+//        ramFile r = new ramFile();
+//        input.reset();
+//        do
+//        {
+//            input.nextRow();
+//            Object next[] = input.get();
+//            String result = "";
+//            boolean first = true;
+//            for(int ct=0;ct<variable.length;ct++)
+//            {
+//                if(first)
+//                    first=false;
+//                else
+//                    result+="\0";
+//                
+//                if(variable[ct])
+//                {
+//                    result+=next[(int)value[ct]];
+//                }
+//                else
+//                {
+//                    result+=value[ct];
+//                }
+//            }
+//            r.append(result);
+//            
+//            
+//        }while(input.hasNextRow());
+//        
+//        String names[] = new String[variable.length];
+//        for(int ct=0;ct<names.length;ct++)
+//        {
+//            if(this.names[ct]!=null)
+//            {
+//                names[ct] = this.names[ct];
+//            }
+//            else if(variable[ct])
+//            {
+//                names[ct] = input.getColName((int) value[ct]);
+//            }
+//            else
+//            {
+//                names[ct] = (String)value[ct];
+//            }
+//        }
+//        result = new table(r, names);
+//    }
+//    
+    public String toString()
+    {
+        String result = "select ";
         if(query.trim().equals("*"))
+            return result + "*"+"from "+(getInput()==null?"null":getInput().toString());
+        String names[] = new String[variable.length];
+        for(int ct=0;ct<names.length;ct++)
         {
-            result = input;
-            return;
+            if(this.names[ct]!=null)
+            {
+                names[ct] = this.names[ct];
+            }
+            else if(variable[ct])
+            {
+                names[ct] = getInput().getColName((int) value[ct]);
+            }
+            else
+            {
+                names[ct] = (String)value[ct];
+            }
         }
-        ramFile r = new ramFile();
-        input.reset();
-        do
-        {
-            input.nextRow();
-            Object next[] = input.get();
+        
+        for(String n:names)
+            result+=n+" ";
+        return result+"from "+(getInput()==null?"null":getInput().toString());
+    }
+
+    @Override
+    public Mapper getMapper() {
+        return new Mapper<IntWritable[],Text,Text,Text>()
+                {
+                    {
+                        parseInput();
+                    }
+                    public void map(IntWritable key[], Text line, Context cont) throws IOException, InterruptedException
+                {
+                    if(passThrough)
+                {
+                    cont.write(line,new Text(""));
+                    return;
+                }
+                    
+                    Object next[] = line.toString().split(getInput().getSeperator());
             String result = "";
             boolean first = true;
             for(int ct=0;ct<variable.length;ct++)
@@ -140,79 +232,48 @@ public class select extends query{
                     result+=value[ct];
                 }
             }
-            r.append(result);
-            
-            
-        }while(input.hasNextRow());
-        
-        String names[] = new String[variable.length];
-        for(int ct=0;ct<names.length;ct++)
-        {
-            if(this.names[ct]!=null)
-            {
-                names[ct] = this.names[ct];
-            }
-            else if(variable[ct])
-            {
-                names[ct] = input.getColName((int) value[ct]);
-            }
-            else
-            {
-                names[ct] = (String)value[ct];
-            }
-        }
-        result = new table(r, names);
+            cont.write( new Text(result),new Text(""));
+                }
+                
+                };
+    }
+
+    @Override
+    public Reducer getReducer() {
+        return new Reducer()
+                {
+                    //just default behavior, since all processing is done map side
+                };
     }
     
-    public String toString()
+    public void setInput(table in)
     {
-        String result = "select ";
-        if(query.trim().equals("*"))
-            return result + "*"+"from "+(input==null?"null":input.toString());
-        String names[] = new String[variable.length];
-        for(int ct=0;ct<names.length;ct++)
-        {
-            if(this.names[ct]!=null)
-            {
-                names[ct] = this.names[ct];
-            }
-            else if(variable[ct])
-            {
-                names[ct] = input.getColName((int) value[ct]);
-            }
-            else
-            {
-                names[ct] = (String)value[ct];
-            }
-        }
-        
-        for(String n:names)
-            result+=n+" ";
-        return result+"from "+(input==null?"null":input.toString());
-    }
-
-    @Override
-    public void map(Object input, simpleContext cont) {
-        //no map reduce for a select
-    }
-
-    @Override
-    public void reduce(Object key, LinkedList values) {
-        //no map reduce for a select
+        super.setInput(in);
+        parseInput();
     }
     
-    public table getInput() {
-        return input;
-    }
-    
-    @Override
-    public table getOutput() {
-        return result;    
+    public table getOutput()
+    {
+        if(super.getOutput()!=null)
+            return super.getOutput();
+        table result = new table(new ramFile(),names);
+        result.setSeperator(getInput().getSeperator());
+        super.setOutput(result);
+        return result;
     }
 
     @Override
-    public void setOutput(table table) {
-        result = table;
+    public Class getKeyType() {
+        return Text.class;
     }
+
+    @Override
+    public Class getValueType() {
+        return Text.class;
+    }
+
+
+    
+   
     
 }

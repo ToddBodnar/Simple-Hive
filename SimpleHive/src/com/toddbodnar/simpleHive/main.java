@@ -70,7 +70,7 @@ public class main {
                 if(wf!=null)
                 {
                     wf.execute();
-                    table result = wf.job.getResult();
+                    table result = wf.job.getOutput();
                     if(result!=null)
                         System.out.println(result.print());
                 }

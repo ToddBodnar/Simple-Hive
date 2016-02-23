@@ -29,39 +29,55 @@ public class playground {
         database db = loadDatabases.starTrek();
         
         settings.currentDB = db;
-        System.out.println(db.getTable("people").toJson("people"));
-        /*query aWhere = new where("_col1 >= 40");
+        System.out.println("Select * from ships");
+        
+        query simpleSelect = new select("*");
+        simpleSelect.setInput(db.getTable("ships"));
+        SimpleHadoopDriver.run(simpleSelect, true);
+        System.out.println(simpleSelect.getOutput().print());
+        
+        System.out.println("colstats on people group by ship number");
+        query stats = new colStats(1,2);//summarize age group by ship number
+        stats.setInput(db.getTable("people"));
+        SimpleHadoopDriver.run(stats, true);
+        System.out.println("\n"+stats.getOutput().print());
+        
+        System.out.println("Select * from people where age >=40");
+        query aWhere = new where("_col1 >= 40");
         aWhere.setInput(db.getTable("people"));
         
         SimpleHadoopDriver.run(aWhere, true);
+        System.out.println(aWhere.getOutput().print());
+        
+        System.out.println("Select name as Name,1 as one,age,3 as three from people where age >= 40");
         query aSelect = new select("name as Name,1 as one,age,3 as three");
-        aSelect.setInput(aWhere.getResult());
+        aSelect.setInput(aWhere.getOutput());
         //System.out.println(aWhere.getResult());
         SimpleHadoopDriver.run(aSelect, true);
-        System.out.println(aSelect.getResult().print());
+        System.out.println(aSelect.getOutput().print());
         
-        query join = new leftJoin(db.getTable("ships"),2,0);
-        join.setInput(db.getTable("people"));
+        System.out.println("select * from people left join ships on ship_id = id");
+        leftJoin join = new leftJoin(0,2);
+        join.setInput(db.getTable("ships"));
+        join.setOtherInput(db.getTable("people"));
         SimpleHadoopDriver.run(join, true);
+        System.out.println(join.getOutput().print());
         
+        System.out.println("\n\nselect name as Name,shipname as Ship,age from people left join ships on ship_id = id");
         query Select = new select("name as Name,shipname as Ship,age");
-        Select.setInput(join.getResult());
+        Select.setInput(join.getOutput());
         SimpleHadoopDriver.run(Select, true);
-        System.out.println("\n"+Select.getResult().print());
+        System.out.println("\n"+Select.getOutput().print());
         
         
         workflow wf = Parser.parse(lexer.lexStr("select    *    from people"));
         System.out.println(wf);
         wf.execute();
-        System.out.println(wf.job.getResult().print());
+        System.out.println(wf.job.getOutput().print());
         
         Parser.parse(lexer.lexStr("show \t\tTaBles"));
         
         Parser.parse(lexer.lexStr("describe people"));
         
-        query stats = new colStats(1,2);//summarize age group by ship number
-        stats.setInput(db.getTable("people"));
-        SimpleHadoopDriver.run(stats, true);
-        System.out.println("\n"+stats.getResult().print());*/
     }
 }

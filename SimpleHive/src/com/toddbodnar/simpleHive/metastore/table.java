@@ -123,7 +123,11 @@ public class table {
     }
 
     public String toString() {
-        String name = settings.currentDB.getTableName(this);
+        String name;
+        if(settings.currentDB!=null)
+            name = settings.currentDB.getTableName(this);
+        else
+            name = "unknown table";
         return "Table "+name+" with "+getColNames().length+" columns";
     }
     

@@ -13,7 +13,17 @@ import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
 import com.toddbodnar.simpleHadoop.MapReduceJob;
+import com.toddbodnar.simpleHadoop.tableRecordReader;
 import com.toddbodnar.simpleHive.metastore.table;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  * inputFormat: read in the file and pass each paragraph to a mapper
@@ -21,53 +31,27 @@ import com.toddbodnar.simpleHive.metastore.table;
  reducer: count the number of each word, store results in the file wordCount.input
  * @author toddbodnar
  */
-public class wordCount extends MapReduceJob<String,String,Long>{
+public class wordCount extends MapReduceJob<IntWritable[],Text,Text,LongWritable,Text,LongWritable>{
 
-    public wordCount(file input)
-    {
-        this.input=input;
-        result = new laggyRamFile(10);
-    }
 
-    @Override
-    public void map(String input, simpleContext cont) {
-        for(String s:input.split(" "))
-            cont.emit_map(s.toLowerCase(), 1l);
-    }
 
-    @Override
-    public void reduce(String key, LinkedList<Long> values) {
-        long count = 0;
-        for(long val:values)
-            count+=val;
-        result.append(key+"\0"+count);
-    }
-
-    @Override
-    public void inputFormat(simpleContext cont) {
-        
-        while(input.hasNext())
-            cont.add_input_format(input.readNextLine());
-    }
+ 
     
-    file input;
-    file result;
+    table input;
+    table result;
 
     
-    public int test(boolean verbose) {
+    public int test(boolean verbose) throws IOException, InterruptedException {
         ramFile testFile = new laggyRamFile(10);
         for(String s:testData)
             testFile.append(s);
         boolean crash = false;
-        wordCount job = new wordCount(testFile);
+        wordCount job = new wordCount();
+        job.setInput(new table(testFile,null));
+        job.setOutput(new table(new ramFile(),null));
         
-        try{
         SimpleHadoopDriver.run(job,true);
-        }catch(Exception e)
-        {
-            System.out.println(e);
-            crash = true;
-        }
+        
         
         int score = tests.score(verbose,!crash,"Running job");
         
@@ -75,9 +59,10 @@ public class wordCount extends MapReduceJob<String,String,Long>{
         
         int googleCount=-1;
         int hadoopCount=-1;
+        job.getOutput().reset();
         if (!crash) {
-            while (job.result.hasNext()) {
-                String line = job.result.readNextLine();
+            while (job.getOutput().getFile().hasNext()) {
+                String line = job.getOutput().getFile().readNextLine();
                 //System.out.println(line);
                 if (line.split("\0")[0].equals("google")) {
                     googleCount = Integer.parseInt(line.split("\0")[1]);
@@ -97,7 +82,13 @@ public class wordCount extends MapReduceJob<String,String,Long>{
     
     public static void main(String args[])
     {
-        new wordCount(null).test(true);
+        try {
+            new wordCount().test(true);
+        } catch (IOException ex) {
+            Logger.getLogger(wordCount.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(wordCount.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -122,21 +113,62 @@ public class wordCount extends MapReduceJob<String,String,Long>{
 
     @Override
     public void setInput(table in) {
-        
+        input = in;
     }
 
     @Override
     public table getInput() {
-        return null;
+        return input;
     }
 
     @Override
     public table getOutput() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return result;
     }
 
     @Override
     public void setOutput(table table) {
-        result = table.getFile();
+        result = table;
+    }
+
+    @Override
+    public RecordReader<IntWritable[], Text> getRecordReader() {
+        return new tableRecordReader(getInput());
+    }
+
+    @Override
+    public Mapper<IntWritable[], Text, Text, LongWritable> getMapper() {
+        return new Mapper<IntWritable[], Text, Text, LongWritable>() {
+            public void map(IntWritable key[], Text value, Context context) throws IOException, InterruptedException {
+                //value = value.toLowerCase();
+                for (String token : value.toString().toLowerCase().split(" ")) {
+                        context.write(new Text(token), new LongWritable(1));
+                    
+                }
+            }
+        };
+    }
+
+    @Override
+    public Reducer<Text, LongWritable,Text, LongWritable> getReducer() {
+        return new Reducer<Text, LongWritable,Text, LongWritable>() {
+            public void reduce(Text key, Iterable<LongWritable> values, Context context) throws IOException, InterruptedException {
+                long sum = 0;
+                for (LongWritable l : values) {
+                    sum += l.get();
+                }
+                context.write(key, new LongWritable(sum));
+            }
+        };
+    }
+
+    @Override
+    public Class getKeyType() {
+        return Text.class;
+    }
+
+    @Override
+    public Class getValueType() {
+        return LongWritable.class;
     }
 }

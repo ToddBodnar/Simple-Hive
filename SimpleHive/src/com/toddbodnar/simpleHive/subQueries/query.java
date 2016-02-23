@@ -9,13 +9,54 @@ import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHadoop.MapReduceJob;
+import com.toddbodnar.simpleHadoop.tableRecordReader;
 import com.toddbodnar.simpleHive.metastore.table;
+import java.io.IOException;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
 
 /**
  *
  * @author toddbodnar
  */
-public abstract class query extends MapReduceJob{
+public abstract class query<key,value> extends MapReduceJob<IntWritable[],Text,key,value,Object,Text>{
     
-    public abstract table getResult();
+    /**
+     * By default, just process the table line-by-line (row-by-row)
+     * @return 
+     */
+    public RecordReader<IntWritable[],Text> getRecordReader()
+    {
+        return new tableRecordReader(getInput());
+    }
+
+    public void setInput(table in)
+    {
+        input = in;
+    }
+    
+    
+    public void setOutput(table out)
+    {
+        output = out;
+    }
+    
+    
+    public table getInput()
+    {
+        return input;
+    }
+
+    
+    public table getOutput()
+    {
+        return output;
+    }
+    
+    private table input,output;
 }

@@ -10,18 +10,19 @@ import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.query;
 import com.toddbodnar.simpleHive.subQueries.where;
+import java.io.IOException;
 
 /**
  *
  * @author toddbodnar
  */
 public class testWhere {
-    public static void main(String args[])
+    public static void main(String args[]) throws IOException, InterruptedException
     {
         database d = loadDatabases.starTrek();
-        query q = new where("_col1 >= 40");
+        query q = new where("age >= 40");
         q.setInput(d.getTable("people"));
         SimpleHadoopDriver.run(q, true);
-        System.out.println(q.getResult());
+        System.out.println(q.getOutput().print());
     }
 }

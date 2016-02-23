@@ -10,141 +10,120 @@ import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHive.metastore.table;
+import java.io.IOException;
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
 
 /**
  *
  * @author toddbodnar
  */
-public class leftJoin extends query{
+public class leftJoin extends query<Text, Text> {
+
     /**
      * Joins two tables
+     *
      * @param other the other table to join
      * @param key the location of the key in the table set by setInput
      * @param otherkey the location of the key in the table, other
      */
-    public leftJoin(table other, int key, int otherkey)
-    {
-        mainKey=key;
-        this.otherKey=otherKey;
-        this.other=other;
+    public leftJoin(int key, int otherKey) {
+        mainKey = key;
+        this.otherKey = otherKey;
     }
-    
-    public leftJoin(int key, int otherkey)
-    {
-        this(null,key,otherkey);
+
+    public void setOtherInput(table other) {
+        this.other = other;
     }
-    
-    public void setOther(table other)
-    {
-        this.other=other;
+
+    public table getOtherInput() {
+        return other;
     }
-    
-    table main,other;
+
+    table other;
     ramFile storage;
-    int mainKey,otherKey;
-    @Override
-    public table getResult() {
-        String names[] = new String[main.getColNames().length+other.getColNames().length];
-        for(int ct=0;ct<main.getColNames().length;ct++)
-        {
-            names[ct] = main.getColName(ct);
-        }
-        for(int ct=0;ct<other.getColNames().length;ct++)
-        {
-            names[main.getColNames().length+ct] = other.getColName(ct);
-        }
-        return new table(storage,names);
-    }
-
-    @Override
-    public void setInput(table in) {
-        main=in;
-    }
-
-    @Override
-    public void inputFormat(simpleContext cont) {
-        storage = new ramFile();
-        main.reset();
-        other.reset();
-        while(main.hasNextRow())
-        {
-            main.nextRow();
-            Object o[] = main.get();
-            cont.add_input_format(new Object[]{1,o});
-        }
-        while(other.hasNextRow())
-        {
-            other.nextRow();
-            Object o[] = other.get();
-            cont.add_input_format(new Object[]{2,o});
-        }
-    }
-
-    @Override
-    public void map(Object input, simpleContext cont) {
-        int id = (int)(((Object[])input)[0]);
-        Object row[] = (Object[])(((Object[])input)[1]);
-        if(id==1)
-        {
-            cont.emit_map(row[mainKey], new Object[]{1,row});
-        }
-        else
-        {
-            cont.emit_map(row[otherKey], new Object[]{2,row});
-        }
-    }
-
-    @Override
-    public void reduce(Object key, LinkedList values) {
-        Object left = null;
-        ArrayList right = new ArrayList();
-        for(Object o:values)
-        {
-            Object o2[] = (Object[])o;
-            if((int)o2[0]==2)
-                left = o2[1];
-            else
-                right.add(o2[1]);
-        }
-        if(left==null || right==null)
-            return;
-        for(Object rightO:right)
-        {
-        String result = "";
-        boolean first = true;
-        for(Object o:(Object[])rightO)
-        {
-            if(first)
-                first=false;
-            else
-                result+="\0";
-            result+=o;
-        }
-        for(Object o:(Object[])left)
-        {
-            if(first)
-                first=false;
-            else
-                result+="\0";
-            result+=o;
-        }
-        
-        storage.append(result);
-        }
-    }
-    
-    public table getInput() {
-        return main;
-    }
+    int mainKey, otherKey;
 
     @Override
     public table getOutput() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+
+        if (super.getOutput() != null) {
+            return super.getOutput();
+        }
+
+        String names[] = new String[getInput().getColNames().length + getOtherInput().getColNames().length];
+        for (int ct = 0; ct < getInput().getColNames().length; ct++) {
+            names[ct] = getInput().getColName(ct);
+        }
+        for (int ct = 0; ct < other.getColNames().length; ct++) {
+            names[getInput().getColNames().length + ct] = other.getColName(ct);
+        }
+
+        table result = new table(new ramFile(), names);
+        result.setSeperator(getInput().getSeperator());
+        super.setOutput(result);
+        return result;
+
     }
 
     @Override
-    public void setOutput(table table) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Reducer getReducer() {
+
+        return new Reducer<Text, Text, Text, Text>() {
+            @Override
+            public void reduce(Text key, Iterable<Text> values, Context cont) throws IOException, InterruptedException {
+                String left, right;
+                left = right = null;
+                for (Text input : values) {
+                    if (input.toString().charAt(0) == '0') {
+                        left = input.toString().substring(1);
+                    } else {
+                        right = input.toString().substring(1);
+                    }
+                }
+                if (left == null || right == null)//only join if both tables have a matching key
+                {
+                    return;
+                }
+
+                cont.write(new Text(left + "\0" + right), new Text(""));
+
+            }
+        };
     }
-    
+
+    @Override
+    public Mapper getMapper() {
+        return new Mapper<IntWritable[], Text, Text, Text>() {
+
+            @Override
+            public void map(IntWritable key[], Text line, Mapper.Context cont) throws IOException, InterruptedException {
+
+                int tableId = key[0].get();
+
+                if (tableId == 1) {
+                    cont.write(new Text(line.toString().split(getInput().getSeperator())[mainKey]), new Text('0' + line.toString()));
+                } else if (tableId == 2) {
+                    cont.write(new Text(line.toString().split(getOtherInput().getSeperator())[otherKey]), new Text('1' + line.toString()));
+
+                } else {
+                    throw new IOException("Invalid table number, expected 1 or 2, got " + tableId);
+                }
+            }
+        };
+    }
+
+    @Override
+    public Class getKeyType() {
+        return Text.class;
+    }
+
+    @Override
+    public Class getValueType() {
+        return Text.class;
+    }
+
 }
