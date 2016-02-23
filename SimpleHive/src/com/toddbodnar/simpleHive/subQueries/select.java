@@ -209,7 +209,7 @@ public class select extends query<Text,Text>{
                 {
                     if(passThrough)
                 {
-                    cont.write(line,new Text(""));
+                    cont.write(line,null);
                     return;
                 }
                     
@@ -221,7 +221,7 @@ public class select extends query<Text,Text>{
                 if(first)
                     first=false;
                 else
-                    result+="\0";
+                    result+=getInput().getSeperator();
                 
                 if(variable[ct])
                 {
@@ -232,7 +232,7 @@ public class select extends query<Text,Text>{
                     result+=value[ct];
                 }
             }
-            cont.write( new Text(result),new Text(""));
+            cont.write( new Text(result),null);
                 }
                 
                 };

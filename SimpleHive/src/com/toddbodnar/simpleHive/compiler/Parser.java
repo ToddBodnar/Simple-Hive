@@ -10,7 +10,6 @@ import com.toddbodnar.simpleHive.helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHadoop.distributedHadoopDriver;
-import simpleHadoop.tests.wordCount;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.printString;
 import com.toddbodnar.simpleHive.subQueries.select;

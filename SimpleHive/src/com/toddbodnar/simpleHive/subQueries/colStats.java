@@ -103,7 +103,7 @@ public class colStats extends query<DoubleWritable, Text> {
                 double min = Double.MAX_VALUE;
                 double max = Double.MIN_VALUE;
                 double sum = 0;
-                double ct = 0;
+                int ct = 0;
 
                 for (DoubleWritable value : values) {
                     double number = value.get();
@@ -117,7 +117,7 @@ public class colStats extends query<DoubleWritable, Text> {
                     ct++;
                 }
 
-                double avg = sum / ct;
+                double avg = sum / ct*1.0;
 
                 String result = max + "\0" + min + "\0" + avg + "\0" + sum + "\0" + ct;
                 cont.write(key, new Text(result));
