@@ -15,6 +15,25 @@ import com.toddbodnar.simpleHive.metastore.table;
  * @author toddbodnar
  */
 public class loadDatabases {
+    public static database singleRow()
+    {
+        database result = new database("Single Row");
+        ramFile r = new ramFile();
+        r.append("1,2,3");
+        table t1 = new table(r,new String[]{"col_1","col_2","col_3"});
+        t1.setSeperator(",");
+        result.addTable("table one",t1);
+        
+        ramFile r2 = new ramFile();
+        r2.append("3,2,1");
+        table t2 = new table(r2,new String[]{"col_1","col_2","col_3"});
+        t2.setSeperator(",");
+    
+        result.addTable("table two",t2);
+        
+        
+        return result;
+    }
     public static database starTrek()
     {
         database result = new database("Star Trek");

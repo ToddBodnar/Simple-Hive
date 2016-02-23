@@ -1,9 +1,11 @@
+package com.toddbodnar.simpleHive.helpers;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package simpleHive.mrJobs.tests;
+
 
 import com.toddbodnar.simpleHive.compiler.lexer;
 import com.toddbodnar.simpleHive.compiler.Parser;

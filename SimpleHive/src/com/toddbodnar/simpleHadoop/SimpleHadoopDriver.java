@@ -90,7 +90,14 @@ public class SimpleHadoopDriver {
         {
             pair thePair = (pair)p;
            
-            out.append(thePair.getKey()+"\0"+thePair.getValue().toString());
+            if(thePair.getKey() == null && thePair.getValue() == null)
+                ;//should something be done when both are null?
+            else if(thePair.getKey() == null)
+                out.append(thePair.getValue().toString());
+            else if(thePair.getValue() == null)
+                out.append(thePair.getKey().toString());
+            else
+                out.append(thePair.getKey()+"\0"+thePair.getValue().toString());
         }
     }
 }

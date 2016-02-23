@@ -89,7 +89,7 @@ public class leftJoin extends query<Text, Text> {
                     return;
                 }
 
-                cont.write(new Text(left + "\0" + right), new Text(""));
+                cont.write(new Text(left + "\0" + right), null);
 
             }
         };

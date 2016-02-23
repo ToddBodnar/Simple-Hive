@@ -83,7 +83,7 @@ public class where extends query<Text,Text>{
                         try {
                             if(theQuery.evaluate((Object[])line.toString().split(getInput().getSeperator())))
                             {
-                                cont.write(line,"");
+                                cont.write(line,null);
                             }           } catch (Exception ex) {
                             Logger.getLogger(where.class.getName()).log(Level.SEVERE, null, ex);
                         }
