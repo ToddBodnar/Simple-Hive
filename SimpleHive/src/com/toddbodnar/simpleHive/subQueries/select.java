@@ -10,6 +10,7 @@ import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -71,16 +72,16 @@ public class select extends query<Text,Text>{
     }
 
 
-    public void parseInput() {
+    public void parseInput(Configuration conf) {
         //no map reduce for a select
         
-        if(query.trim().equals("*"))
+        if(conf.get("SIMPLE_HIVE.SELECT.QUERY_STR").trim().equals("*"))
         {
             passThrough = true;
-            names = getInput().getColNames();
+            names = conf.getStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES");
             return;
         }
-        String split[] = query.split(",");
+        String split[] = conf.get("SIMPLE_HIVE.SELECT.QUERY_STR").split(",");
         variable = new boolean[split.length];
         value = new Object[split.length];
         names = new String[split.length];
@@ -103,7 +104,7 @@ public class select extends query<Text,Text>{
             if(getInput().getColNum(split[ct].trim())!=-1)
             {
                 variable[ct] = true;
-                value[ct] = getInput().getColNum(split[ct].trim());
+                value[ct] = new table(null,conf.getStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES")).getColNum(split[ct].trim());
                 if(names[ct]==null)
                     names[ct] = split[ct].trim();
             }
@@ -202,9 +203,13 @@ public class select extends query<Text,Text>{
     public Mapper getMapper() {
         return new Mapper<IntWritable[],Text,Text,Text>()
                 {
+                    @Override
+                    public void setup(Context cont)
                     {
-                        parseInput();
+                        
+                        parseInput(cont.getConfiguration());
                     }
+                    @Override
                     public void map(IntWritable key[], Text line, Context cont) throws IOException, InterruptedException
                 {
                     if(passThrough)
@@ -213,7 +218,7 @@ public class select extends query<Text,Text>{
                     return;
                 }
                     
-                    Object next[] = line.toString().split(getInput().getSeperator());
+                    Object next[] = line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR"));
             String result = "";
             boolean first = true;
             for(int ct=0;ct<variable.length;ct++)
@@ -221,7 +226,7 @@ public class select extends query<Text,Text>{
                 if(first)
                     first=false;
                 else
-                    result+=getInput().getSeperator();
+                    result+=cont.getConfiguration().get("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR");
                 
                 if(variable[ct])
                 {
@@ -249,7 +254,9 @@ public class select extends query<Text,Text>{
     public void setInput(table in)
     {
         super.setInput(in);
-        parseInput();
+        Configuration conf = new Configuration();
+        this.writeConfig(conf);
+        parseInput(conf);
     }
     
     public table getOutput()
@@ -270,6 +277,13 @@ public class select extends query<Text,Text>{
     @Override
     public Class getValueType() {
         return Text.class;
+    }
+
+    @Override
+    public void writeConfig(Configuration conf) {
+        conf.set("SIMPLE_HIVE.SELECT.QUERY_STR", query);
+        conf.set("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR", getInput().getSeperator());
+        conf.setStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES", getInput().getColNames());
     }
 
 

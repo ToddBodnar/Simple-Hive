@@ -71,5 +71,5 @@ public class selectTest {
         assertEquals("1,2,3", sel.getOutput().getFile().readNextLine());
         Assert.assertArrayEquals(new String[]{"col_1", "col_2", "col_3"}, sel.getOutput().getColNames());
     }
-
+    
 }

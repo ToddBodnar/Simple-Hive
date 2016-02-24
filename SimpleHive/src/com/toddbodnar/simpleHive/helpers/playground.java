@@ -38,7 +38,7 @@ public class playground {
         SimpleHadoopDriver.run(simpleSelect, true);
         System.out.println(simpleSelect.getOutput().print());
         
-        System.out.println("colstats on people group by ship number");
+        /*System.out.println("colstats on people group by ship number");
         query stats = new colStats(1,2);//summarize age group by ship number
         stats.setInput(db.getTable("people"));
         SimpleHadoopDriver.run(stats, true);
@@ -80,6 +80,6 @@ public class playground {
         Parser.parse(lexer.lexStr("show \t\tTaBles"));
         
         Parser.parse(lexer.lexStr("describe people"));
-        
+        */
     }
 }

@@ -74,6 +74,8 @@ public class SimpleHadoopDriver {
             records.addMoreTables(((leftJoin)theJob).getOtherInput());
         }
         
+        theJob.writeConfig(cont.getConfiguration());
+        
         records.initialize(null, null);
         
         theJob.getMapper().run((Mapper.Context) cont.getMapContext());
