@@ -13,7 +13,7 @@ import com.toddbodnar.simpleHive.metastore.table;
  */
 public class booleanTest{
         boolean isVariable[];
-        Object value[];
+        String value[];
         String type;
         
         booleanTest subTests[] = null;
@@ -30,19 +30,19 @@ public class booleanTest{
             {
                 //if at a leaf
                 isVariable = new boolean[]{false,false};
-                value = new Object[]{null,null};
+                value = new String[]{null,null};
                 String split[] = partialQuery.split(" ");
                 for(int ct=0;ct<3;ct+=2) //test first and last part of split
                 {
                     if(split[ct].startsWith("_col"))
                     {
                         isVariable[ct/2]=true;
-                        value[ct/2] = Integer.parseInt(split[ct].substring(4));
+                        value[ct/2] = (split[ct].substring(4));
                     }
                     else
                     {
                         isVariable[ct/2]=false;
-                        value[ct/2] = split[ct];
+                        value[ct/2] = split[ct].replace("'", "");
                     }
                 }
                 type = split[1];
@@ -102,7 +102,7 @@ public class booleanTest{
                 for(int ct=0;ct<2;ct++)
                 {
                     if(isVariable[ct])
-                        elements[ct] = row[((int) value[ct])];
+                        elements[ct] = row[ Integer.parseInt(value[ct])];
                     else
                         elements[ct] = value[ct];
                                 

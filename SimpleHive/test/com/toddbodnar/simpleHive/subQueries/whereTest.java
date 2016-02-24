@@ -69,7 +69,7 @@ public class whereTest {
 
     @Test
     public void testString() throws IOException, InterruptedException {
-        where theWhere = new where("name = 'Tuvok");
+        where theWhere = new where("name = 'Tuvok'");
         theWhere.setInput(db.getTable("people"));
 
         SimpleHadoopDriver.run(theWhere, true);
