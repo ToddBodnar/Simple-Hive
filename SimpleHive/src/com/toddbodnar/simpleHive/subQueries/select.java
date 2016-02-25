@@ -104,7 +104,7 @@ public class select extends query<Text,Text>{
             if(getInput().getColNum(split[ct].trim())!=-1)
             {
                 variable[ct] = true;
-                value[ct] = new table(null,conf.getStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES")).getColNum(split[ct].trim());
+                value[ct] = new table(new ramFile(),conf.getStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES")).getColNum(split[ct].trim());
                 if(names[ct]==null)
                     names[ct] = split[ct].trim();
             }

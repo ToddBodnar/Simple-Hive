@@ -11,6 +11,7 @@ import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -26,7 +27,6 @@ public class leftJoin extends query<Text, Text> {
     /**
      * Joins two tables
      *
-     * @param other the other table to join
      * @param key the location of the key in the table set by setInput
      * @param otherkey the location of the key in the table, other
      */
@@ -105,9 +105,9 @@ public class leftJoin extends query<Text, Text> {
                 int tableId = key[0].get();
 
                 if (tableId == 1) {
-                    cont.write(new Text(line.toString().split(getInput().getSeperator())[mainKey]), new Text('0' + line.toString()));
+                    cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
                 } else if (tableId == 2) {
-                    cont.write(new Text(line.toString().split(getOtherInput().getSeperator())[otherKey]), new Text('1' + line.toString()));
+                    cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
 
                 } else {
                     throw new IOException("Invalid table number, expected 1 or 2, got " + tableId);
@@ -125,5 +125,16 @@ public class leftJoin extends query<Text, Text> {
     public Class getValueType() {
         return Text.class;
     }
+
+    @Override
+    public void writeConfig(Configuration conf) {
+        conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1", getInput().getSeperator());
+        conf.setInt("SIMPLE_HIVE.JOIN.KEY.1",mainKey);
+        
+        conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2", getOtherInput().getSeperator());
+        conf.setInt("SIMPLE_HIVE.JOIN.KEY.2",otherKey);
+    }
+
+
 
 }

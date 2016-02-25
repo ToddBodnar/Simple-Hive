@@ -10,6 +10,7 @@ import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
@@ -84,13 +85,13 @@ public class colStats extends query<DoubleWritable, Text> {
 
             public void map(IntWritable key[], Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
-                String row[] = line.toString().split(getInput().getSeperator());
+                String row[] = line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR"));
                 String groupKey = "*";
-                if (groupByCol != -1) {
-                    groupKey = row[groupByCol].toString();
+                if (cont.getConfiguration().getInt("SIMPLE_HIVE.COLSTATS.GROUPBY", -1) != -1) {
+                    groupKey = row[cont.getConfiguration().getInt("SIMPLE_HIVE.COLSTATS.GROUPBY", -1)].toString();
                 }
 
-                cont.write(new Text(groupKey), new DoubleWritable(Double.parseDouble(row[statsCol])));
+                cont.write(new Text(groupKey), new DoubleWritable(Double.parseDouble(row[cont.getConfiguration().getInt("SIMPLE_HIVE.COLSTATS.COLUMN", -1)])));
             }
         };
     }
@@ -134,5 +135,12 @@ public class colStats extends query<DoubleWritable, Text> {
     @Override
     public Class getValueType() {
         return DoubleWritable.class;
+    }
+
+    @Override
+    public void writeConfig(Configuration conf) {
+        conf.setInt("SIMPLE_HIVE.COLSTATS.COLUMN", statsCol);  
+     conf.setInt("SIMPLE_HIVE.COLSTATS.GROUPBY", groupByCol);
+     conf.set("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR", getInput().getSeperator());
     }
 }
