@@ -20,6 +20,7 @@ import com.toddbodnar.simpleHive.subQueries.query;
 import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
 import com.toddbodnar.simpleHive.metastore.table;
+import org.apache.hadoop.conf.Configuration;
 
 /**
  *
@@ -28,6 +29,9 @@ import com.toddbodnar.simpleHive.metastore.table;
 public class playground {
     public static void main(String args[]) throws Exception
     {
+        Configuration conf = new Configuration();
+        conf.set("test", "hi");
+        System.out.println(conf.get("test"));
         database db = loadDatabases.starTrek();
         
         settings.currentDB = db;
