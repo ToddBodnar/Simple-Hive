@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -179,6 +180,11 @@ table inTable,outTable;
         @Override
         public table getOutput() {
             return outTable;        }
+
+        @Override
+        public void writeConfig(Configuration conf) {
+            ;
+        }
     }
 
 }

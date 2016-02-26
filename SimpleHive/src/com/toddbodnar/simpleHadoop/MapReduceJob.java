@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Set;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHive.metastore.table;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -62,4 +63,11 @@ public abstract class MapReduceJob <mapInKey,mapInValue,key,value,reduceOutKey,r
     public abstract Class getKeyType();
     
     public abstract Class getValueType();
+    
+    /**
+     * Writes the configuration for the MapReduceJob, which will then be shunted to each of the task nodes
+     * @param conf 
+     */
+    public abstract void writeConfig(Configuration conf);
+    
 }

@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DataInputBuffer;
 import org.apache.hadoop.io.Text;
@@ -45,6 +47,7 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
     ReduceContext reducerContext;
     Configuration theConfiguration;
     RecordReader theRecordReader;
+    private Class keyClass,valueClass;
 
     simpleContext(RecordReader recordReader, Class keyClass, Class valueClass) throws InterruptedException, IOException {
         toProcess = new LinkedList<>();
@@ -53,17 +56,33 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
 
         theConfiguration = new Configuration();
         theRecordReader = recordReader;
-        mapperContext = new map().get(recordReader, theConfiguration);
-        reducerContext = new reduce().get(theConfiguration,data,keyClass,valueClass);
-
+        
+        this.keyClass = keyClass;
+        this.valueClass = valueClass;
         
     }
     
     public MapContext<mapInKey, mapInValue, key, value> getMapContext() {
+        if(mapperContext == null)
+            try {
+                mapperContext = new map().get(theRecordReader, theConfiguration);
+        } catch (IOException ex) {
+            Logger.getLogger(simpleContext.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(simpleContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return mapperContext;
     }
 
     public ReduceContext<key, value, reduceOutKey, reduceOutValue> getReduceContext() {
+        if(reducerContext == null)
+            try {
+                reducerContext = new reduce().get(theConfiguration,data,keyClass,valueClass);
+        } catch (IOException ex) {
+            Logger.getLogger(simpleContext.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(simpleContext.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return reducerContext;
     }
 
