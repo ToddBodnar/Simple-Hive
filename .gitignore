@@ -23,3 +23,5 @@ SimpleHive/target/maven-status/maven-compiler-plugin/compile/default-compile/cre
 SimpleHive/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
 
 SimpleHive/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+
+SimpleHive/nbactions.xml

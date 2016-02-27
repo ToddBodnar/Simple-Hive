@@ -33,8 +33,10 @@ public class databaseTest {
         instance.addTable("test table", t);
         instance.addTable("a table",a);
         String expResult = "{tables:["+t.toJson("test table")+","+a.toJson("a table")+"]}";
+        String expResultAlternative = "{tables:["+a.toJson("a table")+","+t.toJson("test table")+"]}";
         String result = instance.toJson();
-        assertEquals(expResult, result);
+        if(!result.equals(expResult) && !result.contains(expResultAlternative))
+             assertEquals(expResult, result);
         
     }
     
