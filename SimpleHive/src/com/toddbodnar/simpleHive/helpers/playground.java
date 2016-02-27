@@ -13,6 +13,7 @@ import com.toddbodnar.simpleHive.compiler.workflow;
 import com.toddbodnar.simpleHive.helpers.loadDatabases;
 import com.toddbodnar.simpleHive.helpers.settings;
 import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
+import com.toddbodnar.simpleHive.IO.hdfsFile;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.colStats;
 import com.toddbodnar.simpleHive.subQueries.leftJoin;
@@ -29,12 +30,14 @@ import org.apache.hadoop.conf.Configuration;
 public class playground {
     public static void main(String args[]) throws Exception
     {
+        
         Configuration conf = new Configuration();
         conf.set("test", "hi");
         System.out.println(conf.get("test"));
         database db = loadDatabases.starTrek();
         
-        settings.currentDB = db;
+        hdfsFile.transferToHDFS(db.getTable("people").getFile());
+        /*settings.currentDB = db;
         System.out.println("Select * from ships");
         
         query simpleSelect = new select("*");
@@ -42,7 +45,7 @@ public class playground {
         SimpleHadoopDriver.run(simpleSelect, true);
         System.out.println(simpleSelect.getOutput().print());
         
-        /*System.out.println("colstats on people group by ship number");
+        System.out.println("colstats on people group by ship number");
         query stats = new colStats(1,2);//summarize age group by ship number
         stats.setInput(db.getTable("people"));
         SimpleHadoopDriver.run(stats, true);

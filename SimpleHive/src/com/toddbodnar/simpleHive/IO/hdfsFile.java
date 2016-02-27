@@ -6,6 +6,7 @@
 package com.toddbodnar.simpleHive.IO;
 
 import com.toddbodnar.simpleHive.helpers.GetConfiguration;
+import com.toddbodnar.simpleHive.helpers.settings;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -26,6 +27,30 @@ import org.apache.hadoop.fs.Path;
  */
 public class hdfsFile extends fileFile{
 
+    public static hdfsFile transferToHDFS(file f) throws IOException
+    {
+        if(f.getClass().equals(hdfsFile.class))//if the file to be put on hdfs is already on hdfs
+            return (hdfsFile)f;                //just return the file
+        
+        FileSystem fs = FileSystem.get(GetConfiguration.get());
+        Path theFile;
+        do
+        {
+            theFile = new Path(settings.hdfs_prefix+"/LOCAL_TABLE_"+System.currentTimeMillis()+"_"+Math.round(Math.random()*10000));
+        }while(fs.exists(theFile));
+        
+        BufferedWriter out = new BufferedWriter(new OutputStreamWriter(fs.create(theFile)));
+        
+        f.resetStream();
+        while(f.hasNext())
+        {
+            out.write(f.readNextLine()+"\n");
+        }
+        out.close();
+        fs.close();
+        return new hdfsFile(theFile);
+    }
+    
     public hdfsFile(Path theLocation)
     {
         location = theLocation;
