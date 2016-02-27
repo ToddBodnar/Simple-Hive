@@ -6,3 +6,6 @@
 
 *.csv#
 /SimpleHive/dist/
+SimpleHive/.pom.xml.swp
+
+SimpleHive/target/maven-archiver/pom.properties
