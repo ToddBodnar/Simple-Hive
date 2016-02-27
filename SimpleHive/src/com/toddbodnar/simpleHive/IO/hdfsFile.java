@@ -71,7 +71,9 @@ public class hdfsFile extends fileFile{
     public void resetStream() {
 
         try {
-            
+            if(out!=null)
+                out.close();
+            writing = false;
             in.close();
             FileSystem fs = FileSystem.get(GetConfiguration.get());
             in = new BufferedReader(new InputStreamReader(fs.open(location)));
@@ -94,5 +96,31 @@ public class hdfsFile extends fileFile{
         return "{type:hdfsFile,file:"+location.toString()+"}";
     }
     
+    public String readNextLine()
+    {
+        if(writing)
+            resetStream();
+        
+        return super.readNextLine();
+    }
+    
+    public void append(String line)
+    {
+        try {
+            if(!writing)
+            {
+            in.close();
+            FileSystem fs = FileSystem.get(GetConfiguration.get());
+            out = new BufferedWriter(new OutputStreamWriter(fs.append(location)));
+            writing = true;
+            }
+            out.write(line+"\n");
+        } catch (IOException ex) {
+            Logger.getLogger(hdfsFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
+    private boolean writing = false;
     private Path location;
 }
