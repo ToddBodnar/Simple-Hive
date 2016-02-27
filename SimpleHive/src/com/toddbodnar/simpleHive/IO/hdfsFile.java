@@ -5,6 +5,7 @@
  */
 package com.toddbodnar.simpleHive.IO;
 
+import com.toddbodnar.simpleHive.helpers.GetConfiguration;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -30,9 +31,9 @@ public class hdfsFile extends fileFile{
         location = theLocation;
         
         try {
-            FileSystem fs = FileSystem.get(new Configuration());
+            FileSystem fs = FileSystem.get(GetConfiguration.get());
             in = new BufferedReader(new InputStreamReader(fs.open(location)));
-            out = new BufferedWriter(new OutputStreamWriter(fs.append(location)));
+            //out = new BufferedWriter(new OutputStreamWriter(fs.append(location)));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -45,11 +46,13 @@ public class hdfsFile extends fileFile{
     public void resetStream() {
 
         try {
+            
             in.close();
-            FileSystem fs = FileSystem.get(new Configuration());
+            FileSystem fs = FileSystem.get(GetConfiguration.get());
             in = new BufferedReader(new InputStreamReader(fs.open(location)));
             next = in.readLine();
-            out.flush();
+            
+            //out.flush();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

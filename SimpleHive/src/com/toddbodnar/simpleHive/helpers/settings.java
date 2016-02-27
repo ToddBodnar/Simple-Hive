@@ -17,4 +17,5 @@ public class settings {
     public static String currentDBName = "default";
     public static boolean local = true;
     public static Configuration conf = null;
+    public static String config_files_xml[] = {"conf/core-site.xml","conf/hdfs-site.xml","conf/mapred-site.xml"};
 }
