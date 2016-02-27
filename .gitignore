@@ -9,3 +9,17 @@
 SimpleHive/.pom.xml.swp
 
 SimpleHive/target/maven-archiver/pom.properties
+/SimpleHive/target/
+SimpleHive/lib/
+
+SimpleHive/nb-configuration.xml
+
+SimpleHive/lib/CopyLibs/org-netbeans-modules-java-j2seproject-copylibstask.jar
+
+SimpleHive/target/
+
+SimpleHive/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+
+SimpleHive/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+
+SimpleHive/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
