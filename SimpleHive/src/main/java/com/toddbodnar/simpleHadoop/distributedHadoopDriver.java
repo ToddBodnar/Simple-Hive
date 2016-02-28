@@ -14,7 +14,11 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import com.toddbodnar.simpleHive.IO.hdfsFile;
+import com.toddbodnar.simpleHive.helpers.GetConfiguration;
+import com.toddbodnar.simpleHive.helpers.settings;
 import com.toddbodnar.simpleHive.metastore.table;
+import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 
 /**
  * A driver to run mrJobs.
@@ -29,26 +33,29 @@ public class distributedHadoopDriver {
      */
     public static void run(MapReduceJob theJob, boolean verbose) throws IOException, InterruptedException, ClassNotFoundException
     {
-        //TODO: replace this
-        /*Configuration conf = new Configuration();
+        Configuration conf = GetConfiguration.get();
         Job job = Job.getInstance(conf, theJob.toString());
         job.setJarByClass(distributedHadoopDriver.class);
         
-        job.setMapperClass(mrJobHadoopWrapper.map.class);
-        job.setReducerClass(mrJobHadoopWrapper.reduce.class);
+        job.setMapperClass(theJob.getMapper().getClass());
+        job.setReducerClass(theJob.getReducer().getClass());
         
+        job.setMapOutputKeyClass(theJob.getKeyType());
+        job.setMapOutputValueClass(theJob.getValueType());
         
-        conf.set("theMRJob", serialString.toString(theJob));
+        theJob.writeConfig(conf);
+        
+        MultipleInputs.addInputPath(job,hdfsFile.transferToHDFS(theJob.getInput().getFile()).getPath(), TextInputFormat.class);
         
         //FileSystem fs = FileSystem.get(conf);
         
-        FileInputFormat.setInputPaths(job, new Path(theJob.getInput().getFile().getLocation()));
+        //FileInputFormat.setInputPaths(job, new Path(theJob.getInput().getFile().getLocation()));
         
-        Path out = new Path("TMP_TABLE_"+theJob.hashCode());
+        Path out = new Path(settings.hdfs_prefix+"/TMP_TABLE_"+theJob.hashCode());
         FileOutputFormat.setOutputPath(job,out);
         
         job.waitForCompletion(verbose);
         theJob.setOutput(new table(new hdfsFile(out), theJob.getOutput().getColNames()));
-        */
+        
     }
 }

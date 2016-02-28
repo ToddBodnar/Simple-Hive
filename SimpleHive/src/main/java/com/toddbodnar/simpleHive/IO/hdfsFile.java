@@ -121,6 +121,11 @@ public class hdfsFile extends fileFile{
         
     }
     
+    public Path getPath()
+    {
+        return location;
+    }
+    
     private boolean writing = false;
     private Path location;
 }
