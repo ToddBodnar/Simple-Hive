@@ -12,6 +12,7 @@ import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -20,13 +21,10 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author toddbodnar
  */
-public class select extends query<Text,Text>{
+public class select extends query<Text,Object>{
 
-    private boolean variable[];
-    private Object value[];
     private String names[];
     private String query;
-    private boolean passThrough = false;
 
     /**
      * 
@@ -72,7 +70,23 @@ public class select extends query<Text,Text>{
     }
 
 
-    public void parseInput(Configuration conf) {
+    public String toString()
+    {
+        return query+"from "+(getInput()==null?"null":getInput().toString());
+    }
+
+    @Override
+    public Mapper getMapper() {
+        return new selectMapper();
+    }
+    
+    private static class selectMapper extends Mapper<Object,Text,Text,Object>
+                {
+        private boolean passThrough;
+        public String names[];
+        private Object[] value;
+        private boolean[] variable;
+                    public void parseInput(Configuration conf) {
         //no map reduce for a select
         
         if(conf.get("SIMPLE_HIVE.SELECT.QUERY_STR").trim().equals("*"))
@@ -101,7 +115,7 @@ public class select extends query<Text,Text>{
                 names[ct]=split[ct].substring(start+4).trim();
                 split[ct] = split[ct].substring(0, start).trim();
             }
-            if(getInput().getColNum(split[ct].trim())!=-1)
+            if(new table(new ramFile(), conf.getStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES")).getColNum(split[ct].trim())!=-1)
             {
                 variable[ct] = true;
                 value[ct] = new table(new ramFile(),conf.getStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES")).getColNum(split[ct].trim());
@@ -117,93 +131,7 @@ public class select extends query<Text,Text>{
             }
         }
     }
-
-//    public void inputFormat(simpleContext cont) {
-//        if(query.trim().equals("*"))
-//        {
-//            result = input;
-//            return;
-//        }
-//        ramFile r = new ramFile();
-//        input.reset();
-//        do
-//        {
-//            input.nextRow();
-//            Object next[] = input.get();
-//            String result = "";
-//            boolean first = true;
-//            for(int ct=0;ct<variable.length;ct++)
-//            {
-//                if(first)
-//                    first=false;
-//                else
-//                    result+="\0";
-//                
-//                if(variable[ct])
-//                {
-//                    result+=next[(int)value[ct]];
-//                }
-//                else
-//                {
-//                    result+=value[ct];
-//                }
-//            }
-//            r.append(result);
-//            
-//            
-//        }while(input.hasNextRow());
-//        
-//        String names[] = new String[variable.length];
-//        for(int ct=0;ct<names.length;ct++)
-//        {
-//            if(this.names[ct]!=null)
-//            {
-//                names[ct] = this.names[ct];
-//            }
-//            else if(variable[ct])
-//            {
-//                names[ct] = input.getColName((int) value[ct]);
-//            }
-//            else
-//            {
-//                names[ct] = (String)value[ct];
-//            }
-//        }
-//        result = new table(r, names);
-//    }
-//    
-    public String toString()
-    {
-        String result = "select ";
-        if(query.trim().equals("*"))
-            return result + "*"+"from "+(getInput()==null?"null":getInput().toString());
-        String names[] = new String[variable.length];
-        for(int ct=0;ct<names.length;ct++)
-        {
-            if(this.names[ct]!=null)
-            {
-                names[ct] = this.names[ct];
-            }
-            else if(variable[ct])
-            {
-                names[ct] = getInput().getColName((int) value[ct]);
-            }
-            else
-            {
-                names[ct] = (String)value[ct];
-            }
-        }
-        
-        for(String n:names)
-            result+=n+" ";
-        return result+"from "+(getInput()==null?"null":getInput().toString());
-    }
-
-    @Override
-    public Mapper getMapper() {
-        return new Mapper<Object,Text,Text,Text>()
-                {
-                    @Override
+                    
                     public void setup(Context cont)
                     {
                         
@@ -214,7 +142,7 @@ public class select extends query<Text,Text>{
                 {
                     if(passThrough)
                 {
-                    cont.write(line,null);
+                    cont.write(line,NullWritable.get());
                     return;
                 }
                     
@@ -240,23 +168,26 @@ public class select extends query<Text,Text>{
             cont.write( new Text(result),null);
                 }
                 
-                };
-    }
+                }
 
     @Override
     public Reducer getReducer() {
-        return new Reducer()
+        return new SelectReducer();
+    }
+    
+    private static class SelectReducer extends Reducer
                 {
                     //just default behavior, since all processing is done map side
                 };
-    }
     
     public void setInput(table in)
     {
         super.setInput(in);
         Configuration conf = new Configuration();
         this.writeConfig(conf);
-        parseInput(conf);
+        selectMapper m = new selectMapper();
+        m.parseInput(conf);
+        names = m.names;
     }
     
     public table getOutput()
@@ -276,7 +207,7 @@ public class select extends query<Text,Text>{
 
     @Override
     public Class getValueType() {
-        return Text.class;
+        return NullWritable.class;
     }
 
     @Override

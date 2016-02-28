@@ -19,6 +19,7 @@ import com.toddbodnar.simpleHive.helpers.settings;
 import com.toddbodnar.simpleHive.metastore.table;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 /**
  * A driver to run mrJobs.
@@ -43,13 +44,19 @@ public class distributedHadoopDriver {
         job.setMapOutputKeyClass(theJob.getKeyType());
         job.setMapOutputValueClass(theJob.getValueType());
         
-        theJob.writeConfig(conf);
+        theJob.writeConfig(job.getConfiguration());
         
         MultipleInputs.addInputPath(job,hdfsFile.transferToHDFS(theJob.getInput().getFile()).getPath(), TextInputFormat.class);
+       
+        System.out.println(TextOutputFormat.SEPERATOR);
+        //see https://stackoverflow.com/questions/11031785/hadoop-key-and-value-are-tab-separated-in-the-output-file-how-to-do-it-semicol
+        job.getConfiguration().set("mapred.textoutputformat.separator", ""); //Prior to Hadoop 2 (YARN)
+            job.getConfiguration().set("mapreduce.textoutputformat.separator", "");  //Hadoop v2+ (YARN)
+            job.getConfiguration().set("mapreduce.output.textoutputformat.separator", "");
+            job.getConfiguration().set("mapreduce.output.key.field.separator", "");
+            job.getConfiguration().set("mapred.textoutputformat.separatorText", ""); // ?
         
-        job.setInputFormatClass(FileInputFormat.class);
-        job.setOutputFormatClass(FileOutputFormat.class);
-        //FileSystem fs = FileSystem.get(conf);
+            job.setOutputFormatClass(TextOutputFormat.class);
         
         //FileInputFormat.setInputPaths(job, new Path(theJob.getInput().getFile().getLocation()));
         
