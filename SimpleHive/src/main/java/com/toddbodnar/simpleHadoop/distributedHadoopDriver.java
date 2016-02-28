@@ -47,6 +47,8 @@ public class distributedHadoopDriver {
         
         MultipleInputs.addInputPath(job,hdfsFile.transferToHDFS(theJob.getInput().getFile()).getPath(), TextInputFormat.class);
         
+        job.setInputFormatClass(FileInputFormat.class);
+        job.setOutputFormatClass(FileOutputFormat.class);
         //FileSystem fs = FileSystem.get(conf);
         
         //FileInputFormat.setInputPaths(job, new Path(theJob.getInput().getFile().getLocation()));

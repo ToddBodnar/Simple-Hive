@@ -97,12 +97,12 @@ public class leftJoin extends query<Text, Text> {
 
     @Override
     public Mapper getMapper() {
-        return new Mapper<IntWritable[], Text, Text, Text>() {
+        return new Mapper<Object, Text, Text, Text>() {
 
             @Override
-            public void map(IntWritable key[], Text line, Mapper.Context cont) throws IOException, InterruptedException {
+            public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
-                int tableId = key[0].get();
+                int tableId = ((IntWritable[])key)[0].get();
 
                 if (tableId == 1) {
                     cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));

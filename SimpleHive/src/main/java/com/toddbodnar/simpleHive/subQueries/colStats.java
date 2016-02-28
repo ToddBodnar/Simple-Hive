@@ -81,9 +81,9 @@ public class colStats extends query<DoubleWritable, Text> {
 
     @Override
     public Mapper getMapper() {
-        return new Mapper<IntWritable[], Text, Text, DoubleWritable>() {
+        return new Mapper<Object, Text, Text, DoubleWritable>() {
 
-            public void map(IntWritable key[], Text line, Mapper.Context cont) throws IOException, InterruptedException {
+            public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
                 String row[] = line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR"));
                 String groupKey = "*";

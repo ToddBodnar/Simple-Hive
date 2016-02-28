@@ -96,7 +96,7 @@ public class wordCountTest {
         assertEquals(10,hadoopCount);
         
     }
-    private static class wordCount extends MapReduceJob<IntWritable[],Text,Text,LongWritable,Text,LongWritable>{
+    private static class wordCount extends MapReduceJob<Object,Text,Text,LongWritable,Text,LongWritable>{
 
 
     
@@ -123,15 +123,15 @@ public class wordCountTest {
 
 
     @Override
-    public RecordReader<IntWritable[], Text> getRecordReader() {
+    public RecordReader<Object, Text> getRecordReader() {
         return new tableRecordReader(getInput());
     }
 
     @Override
-    public Mapper<IntWritable[], Text, Text, LongWritable> getMapper() {
-        return new Mapper<IntWritable[], Text, Text, LongWritable>() {
+    public Mapper<Object, Text, Text, LongWritable> getMapper() {
+        return new Mapper<Object, Text, Text, LongWritable>() {
             @Override
-            public void map(IntWritable key[], Text value, Mapper.Context context) throws IOException, InterruptedException {
+            public void map(Object key, Text value, Mapper.Context context) throws IOException, InterruptedException {
                 //value = value.toLowerCase();
                 for (String token : value.toString().toLowerCase().split(" ")) {
                         context.write(new Text(token), new LongWritable(1));

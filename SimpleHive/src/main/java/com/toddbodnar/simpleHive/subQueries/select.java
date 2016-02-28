@@ -201,7 +201,7 @@ public class select extends query<Text,Text>{
 
     @Override
     public Mapper getMapper() {
-        return new Mapper<IntWritable[],Text,Text,Text>()
+        return new Mapper<Object,Text,Text,Text>()
                 {
                     @Override
                     public void setup(Context cont)
@@ -210,7 +210,7 @@ public class select extends query<Text,Text>{
                         parseInput(cont.getConfiguration());
                     }
                     @Override
-                    public void map(IntWritable key[], Text line, Context cont) throws IOException, InterruptedException
+                    public void map(Object key, Text line, Context cont) throws IOException, InterruptedException
                 {
                     if(passThrough)
                 {

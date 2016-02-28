@@ -68,18 +68,18 @@ public class where extends query<Text, Text> {
     }
 
     @Override
-    public Mapper<IntWritable[], Text, Text, Text> getMapper() {
-        return new Mapper<IntWritable[], Text, Text, Text>() {
+    public Mapper<Object, Text, Text, Text> getMapper() {
+        return new Mapper<Object, Text, Text, Text>() {
 
             public void setup(Context cont) {
                 System.out.println(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
                 theQuery = new booleanTest(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
             }
 
-            public void map(IntWritable key[], Text line, Mapper.Context cont) throws IOException, InterruptedException {
+            public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
                 try {
                     if (theQuery.evaluate((Object[]) line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR")))) {
-                        cont.write(line, null);
+                        cont.write(null,line);
                     }
                 } catch (Exception ex) {
                     Logger.getLogger(where.class.getName()).log(Level.SEVERE, null, ex);
