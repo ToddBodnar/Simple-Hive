@@ -46,16 +46,12 @@ public class distributedHadoopDriver {
         
         theJob.writeConfig(job.getConfiguration());
         
-        MultipleInputs.addInputPath(job,hdfsFile.transferToHDFS(theJob.getInput().getFile()).getPath(), TextInputFormat.class);
-       
-        System.out.println(TextOutputFormat.SEPERATOR);
-        //see https://stackoverflow.com/questions/11031785/hadoop-key-and-value-are-tab-separated-in-the-output-file-how-to-do-it-semicol
-        job.getConfiguration().set("mapred.textoutputformat.separator", ""); //Prior to Hadoop 2 (YARN)
-            job.getConfiguration().set("mapreduce.textoutputformat.separator", "");  //Hadoop v2+ (YARN)
-            job.getConfiguration().set("mapreduce.output.textoutputformat.separator", "");
-            job.getConfiguration().set("mapreduce.output.key.field.separator", "");
-            job.getConfiguration().set("mapred.textoutputformat.separatorText", ""); // ?
+        Path input = hdfsFile.transferToHDFS(theJob.getInput().getFile()).getPath();
         
+        MultipleInputs.addInputPath(job,input, TextInputFormat.class);
+       
+        job.getConfiguration().set(TextOutputFormat.SEPERATOR,"");
+            
             job.setOutputFormatClass(TextOutputFormat.class);
         
         //FileInputFormat.setInputPaths(job, new Path(theJob.getInput().getFile().getLocation()));
@@ -63,8 +59,22 @@ public class distributedHadoopDriver {
         Path out = new Path(settings.hdfs_prefix+"/TMP_TABLE_"+theJob.hashCode());
         FileOutputFormat.setOutputPath(job,out);
         
-        job.waitForCompletion(verbose);
-        theJob.setOutput(new table(new hdfsFile(out), theJob.getOutput().getColNames()));
+        boolean success = job.waitForCompletion(true);
+        
+        if(!success)
+        {
+            System.err.println("Error processing "+theJob);
+            return;
+        }
+        
+        FileSystem fs = FileSystem.get(GetConfiguration.get());
+        
+        fs.delete(new Path(out,"_SUCCESS"), false);
+        
+        table output = new table(new hdfsFile(out),theJob.getOutput().getColNames());
+        output.setSeperator(theJob.getOutput().getSeperator());
+        
+        theJob.setOutput(output);
         
     }
 }

@@ -165,7 +165,7 @@ public class select extends query<Text,Object>{
                     result+=value[ct];
                 }
             }
-            cont.write( new Text(result),null);
+            cont.write( new Text(result),NullWritable.get());
                 }
                 
                 }
