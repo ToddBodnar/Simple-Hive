@@ -15,6 +15,7 @@ import com.toddbodnar.simpleHive.subQueries.printString;
 import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
 import com.toddbodnar.simpleHive.metastore.table;
+import com.toddbodnar.simpleHive.subQueries.colStats;
 import com.toddbodnar.simpleHive.subQueries.leftJoin;
 
 /**
@@ -35,6 +36,13 @@ public class Parser {
             LinkedList<String> partial = (LinkedList<String>) tokens.clone();
             partial.removeFirst();
             return parseSelect(partial);
+        }
+        
+        if(tokens.get(0).equalsIgnoreCase("colstats"))
+        {
+            LinkedList<String> partial = (LinkedList<String>) tokens.clone();
+            partial.removeFirst();
+            return parseColStats(partial);
         }
         
         if(tokens.get(0).equalsIgnoreCase("show") && tokens.get(1).equalsIgnoreCase("tables"))
@@ -157,6 +165,64 @@ public class Parser {
         }
         System.out.println(head);
         return head;
+    }
+    
+    /**
+     * Parse a col stats call in the form of "colstats COL_NAME [group by COL_NAME] from TABLE"
+     * @param tokens
+     * @return 
+     */
+    private static workflow parseColStats(LinkedList<String> tokens) throws Exception
+    {
+        int tokenCount = 1;
+        int columnId, groupId=-1;
+        String column_name = tokens.get(0);
+        
+        
+        String group_name = null;
+        if(tokens.get(1).equalsIgnoreCase("GROUP"))
+        {
+            if(!tokens.get(2).equalsIgnoreCase("BY"))
+            {
+                throw new Exception("SQL Error: Expected keyword 'on' found "+tokens.get(2));
+            }
+            group_name = tokens.get(3);
+            tokenCount = 4;
+        }
+        if(!tokens.get(tokenCount).equalsIgnoreCase("FROM"))
+        {
+            throw new Exception("SQL Error: Expected keyword 'from' found "+tokens.get(tokenCount));
+        }
+        tokenCount++;
+        if(tokens.get(tokenCount).equalsIgnoreCase("SELECT"))
+        {
+            throw new Exception("Not Yet Implemented: Doing col stats on a generated table (using SELECT)");
+        }
+        
+        table input = settings.currentDB.getTable(tokens.get(tokenCount));
+        if(input==null)
+        {
+            throw new Exception("SQL Error: cannot find table: "+((tokens.get(tokenCount)==null)?"null":tokens.get(tokenCount))+" in database "+((settings.currentDB==null)?"null":settings.currentDB));
+        }
+        
+        columnId = input.getColNum(column_name);
+        if(columnId == -1)
+        {
+            throw new Exception("SQL Error: cannot find column "+column_name);
+        }
+        
+        if(group_name != null)
+        {
+            groupId = input.getColNum(group_name);
+        if(groupId == -1)
+        {
+            throw new Exception("SQL Error: cannot find column "+group_name);
+        }
+        }
+        
+        workflow wf = new workflow(new colStats(columnId, groupId));
+        wf.job.setInput(input);
+        return wf;
     }
     
     public static void main(String args[]) throws Exception
