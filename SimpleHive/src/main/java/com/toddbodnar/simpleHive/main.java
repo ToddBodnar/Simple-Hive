@@ -65,6 +65,10 @@ public class main {
             String input = in.next();
             if(input.length()==0)
                 continue;
+            if(input.equalsIgnoreCase("QUIT") || input.equalsIgnoreCase("EXIT"))
+            {
+                break;
+            }
             try {
                 workflow wf = Parser.parse(lexer.lexStr(input));
                 if(wf!=null)
@@ -79,5 +83,6 @@ public class main {
             }
             
         }
+        System.out.println("Exiting");
     }
 }
