@@ -48,7 +48,7 @@ public class workflow {
         if(getPreReqs().size()>0)
             job.setInput(getPreReqs().get(0).job.getOutput());
         
-        if(job.getClass().equals(leftJoin.class))
+        if(job.getClass().equals(leftJoin.class) && getPreReqs().size()>1)
         {
             ((leftJoin)job).setOtherInput(getPreReqs().get(1).job.getOutput());
         }
@@ -80,7 +80,7 @@ public class workflow {
     {
         String result = "Workflow element\nUsing job:\n"+job+"\n\nWith "+preReqs.size()+" job(s) that must be completed first:";
         for(workflow w:preReqs)
-            result+="\n\n"+w.toString();
+            result+="\n\n"+(w==null?"null":w.toString());
         return result;
     }
     

@@ -15,6 +15,7 @@ import com.toddbodnar.simpleHive.subQueries.printString;
 import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
 import com.toddbodnar.simpleHive.metastore.table;
+import com.toddbodnar.simpleHive.subQueries.leftJoin;
 
 /**
  * Builds a Parser tree from a set of tokens
@@ -62,6 +63,7 @@ public class Parser {
         workflow leftJoinEnd = null;
         
         workflow where = null;
+        workflow head = null;
         
         
         
@@ -83,14 +85,56 @@ public class Parser {
         }
         
         select = new workflow(new select(selectArgs));
-        
+        head = select;
+        select.job.setInput(fromTable);
         if(itr.hasNext())
         {
             next = itr.next();
-            while(next.equalsIgnoreCase("LEFT"))
+            while(next.equalsIgnoreCase("JOIN"))
             {
-                //while left joining tables
-                //left join table on x=y
+                fromTableStr = itr.next();
+                table joinTable = settings.currentDB.getTable(fromTableStr);
+                if (joinTable == null) {
+                    throw new Exception("SQL Error: cannot find table: " + ((fromTableStr == null) ? "null" : fromTableStr) + " in database " + ((settings.currentDB == null) ? "null" : settings.currentDB));
+                }
+                
+                next = itr.next();
+                if(!next.equalsIgnoreCase("ON"))
+                {
+                    throw new Exception("SQL Error: Expected keyword 'ON', found "+next);
+                }
+                String t1JoinCol = itr.next();
+                next = itr.next();
+                String t2JoinCol = itr.next();
+                if(!next.equals("="))
+                {
+                    throw new Exception("SQL Error: Expected '=' in join statement, got "+next);
+                }
+                
+                int t1JoinColNum = fromTable.getColNum(t1JoinCol);
+                int t2JoinColNum = joinTable.getColNum(t2JoinCol);
+                
+                if(t1JoinColNum == -1)
+                {
+                    throw new Exception("SQL Error: Could not find column '"+t1JoinCol+"' in table "+fromTable);
+                }
+                if(t2JoinColNum == -1)
+                {
+                    throw new Exception("SQL Error: Could not find column '"+t2JoinCol+"' in table "+joinTable);
+                }
+                
+                leftJoin join = new leftJoin(t1JoinColNum,t2JoinColNum);
+                join.setInput(fromTable);
+                join.setOtherInput(joinTable);
+                
+                workflow joinwf = new workflow(join);
+                select.addPreReq(joinwf);
+                select = joinwf;
+                
+                if(itr.hasNext())
+                    next = itr.next();
+                else 
+                    next = "null";
             }
             if(itr.hasNext())
             {
@@ -105,16 +149,14 @@ public class Parser {
                 }
                 where = new workflow(new where(remaining));
                 where.job.setInput(fromTable);
+                select.addPreReq(where);
             }
             
-            select.addPreReq(where);
+            
             
         }
-        else
-        {
-            select.job.setInput(fromTable);
-        }
-        return select;
+        System.out.println(head);
+        return head;
     }
     
     public static void main(String args[]) throws Exception

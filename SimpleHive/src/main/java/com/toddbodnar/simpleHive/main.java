@@ -50,7 +50,7 @@ public class main {
                 settings.local = true;
             }
         }
-        settings.currentDB = loadDatabases.battleStarGalacticaGame();
+        settings.currentDB = loadDatabases.starTrek();
 
         System.out.println("Using database metastore: " + settings.currentDB.toString());
     }
