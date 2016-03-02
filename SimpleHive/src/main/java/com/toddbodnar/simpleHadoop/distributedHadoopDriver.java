@@ -17,6 +17,8 @@ import com.toddbodnar.simpleHive.IO.hdfsFile;
 import com.toddbodnar.simpleHive.helpers.GetConfiguration;
 import com.toddbodnar.simpleHive.helpers.settings;
 import com.toddbodnar.simpleHive.metastore.table;
+import com.toddbodnar.simpleHive.subQueries.leftJoin;
+import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
@@ -48,7 +50,15 @@ public class distributedHadoopDriver {
         
         Path input = hdfsFile.transferToHDFS(theJob.getInput().getFile()).getPath();
         
-        MultipleInputs.addInputPath(job,input, TextInputFormat.class);
+        if (theJob.getClass().equals(leftJoin.class)) {
+            leftJoin jobLeftJoin = (leftJoin)theJob;
+            Path input2 = hdfsFile.transferToHDFS(jobLeftJoin.getOtherInput().getFile()).getPath();
+            Mapper maps[] = jobLeftJoin.getMapperPairs();
+            MultipleInputs.addInputPath(job, input, TextInputFormat.class, maps[0].getClass());
+            MultipleInputs.addInputPath(job, input2, TextInputFormat.class, maps[1].getClass());
+        }
+        else
+            MultipleInputs.addInputPath(job,input, TextInputFormat.class);
        
         job.getConfiguration().set(TextOutputFormat.SEPERATOR,"");
             

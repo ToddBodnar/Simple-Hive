@@ -97,7 +97,7 @@ public class leftJoin extends query<Text, Text> {
         }
     }
 
-    private static class LeftJoinMapper extends Mapper<Object, Text, Text, Text> {
+    private static class LeftJoinMapperCombined extends Mapper<Object, Text, Text, Text> {
 
         public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
@@ -113,10 +113,37 @@ public class leftJoin extends query<Text, Text> {
             }
         }
     }
+    
+    private static class LeftJoinMapperCombinedOne extends Mapper<Object, Text, Text, Text> {
+
+        public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
+
+            
+            
+                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
+            
+        }
+    }
+    
+    private static class LeftJoinMapperCombinedTwo extends Mapper<Object, Text, Text, Text> {
+
+        public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
+
+           
+            
+                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
+            
+        }
+    }
 
     @Override
     public Mapper getMapper() {
-        return new LeftJoinMapper();
+        return new LeftJoinMapperCombined();
+    }
+    
+    public Mapper[] getMapperPairs()
+    {
+        return new Mapper[]{new LeftJoinMapperCombinedOne(),new LeftJoinMapperCombinedTwo()};
     }
 
     @Override
