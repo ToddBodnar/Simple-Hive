@@ -16,6 +16,7 @@ import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -31,8 +32,8 @@ public class where extends query<Text, Text> {
 
     /**
      * given a partial query (the part after the where) of the form: _col1 <
-     * "string" AND _col2 = "string" AND _col3 = "string" 
-     * 
+     * "string" AND _col2 = "string" AND _col3 = "string"
+     *
      * @param partialQuery
      */
     public where(String partialQuery) {
@@ -62,30 +63,37 @@ public class where extends query<Text, Text> {
 
     @Override
     public Reducer getReducer() {
-        return new Reducer() {
-            //just default behavior, since all processing is done map side
-        };
+        return new WhereReducer();
+    }
+
+    private static class WhereReducer extends Reducer {
+    ;//just default behavior, since all processing is done map side
+
     }
 
     @Override
     public Mapper<Object, Text, Text, Text> getMapper() {
-        return new Mapper<Object, Text, Text, Text>() {
+        return new WhereMapper();
+    }
 
-            public void setup(Context cont) {
-                System.out.println(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
-                theQuery = new booleanTest(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
-            }
+    private static class WhereMapper extends Mapper<Object, Text, Text, Text> {
 
-            public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
-                try {
-                    if (theQuery.evaluate((Object[]) line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR")))) {
-                        cont.write(null,line);
-                    }
-                } catch (Exception ex) {
-                    Logger.getLogger(where.class.getName()).log(Level.SEVERE, null, ex);
+        private booleanTest theQuery;
+
+        public void setup(Context cont) {
+            System.out.println(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
+            theQuery = new booleanTest(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
+        }
+
+        public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
+            try {
+                if (theQuery.evaluate((Object[]) line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR")))) {
+                    cont.write(line, NullWritable.get());
                 }
+            } catch (Exception ex) {
+                Logger.getLogger(where.class.getName()).log(Level.SEVERE, null, ex);
             }
-        };
+        }
     }
 
     @Override

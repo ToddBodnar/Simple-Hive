@@ -72,48 +72,51 @@ public class leftJoin extends query<Text, Text> {
     @Override
     public Reducer getReducer() {
 
-        return new Reducer<Text, Text, Text, Text>() {
-            @Override
-            public void reduce(Text key, Iterable<Text> values, Context cont) throws IOException, InterruptedException {
-                String left, right;
-                left = right = null;
-                for (Text input : values) {
-                    if (input.toString().charAt(0) == '0') {
-                        left = input.toString().substring(1);
-                    } else {
-                        right = input.toString().substring(1);
-                    }
-                }
-                if (left == null || right == null)//only join if both tables have a matching key
-                {
-                    return;
-                }
+        return new LeftJoinReducer();
+    }
 
-                cont.write(new Text(left + "\0" + right), null);
+    private static class LeftJoinReducer extends Reducer<Text, Text, Text, Text> {
 
+        public void reduce(Text key, Iterable<Text> values, Context cont) throws IOException, InterruptedException {
+            String left, right;
+            left = right = null;
+            for (Text input : values) {
+                if (input.toString().charAt(0) == '0') {
+                    left = input.toString().substring(1);
+                } else {
+                    right = input.toString().substring(1);
+                }
             }
-        };
+            if (left == null || right == null)//only join if both tables have a matching key
+            {
+                return;
+            }
+
+            cont.write(new Text(left + "\0" + right), null);
+
+        }
+    }
+
+    private static class LeftJoinMapper extends Mapper<Object, Text, Text, Text> {
+
+        public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
+
+            int tableId = ((IntWritable[]) key)[0].get();
+
+            if (tableId == 1) {
+                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
+            } else if (tableId == 2) {
+                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
+
+            } else {
+                throw new IOException("Invalid table number, expected 1 or 2, got " + tableId);
+            }
+        }
     }
 
     @Override
     public Mapper getMapper() {
-        return new Mapper<Object, Text, Text, Text>() {
-
-            @Override
-            public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
-
-                int tableId = ((IntWritable[])key)[0].get();
-
-                if (tableId == 1) {
-                    cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
-                } else if (tableId == 2) {
-                    cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
-
-                } else {
-                    throw new IOException("Invalid table number, expected 1 or 2, got " + tableId);
-                }
-            }
-        };
+        return new LeftJoinMapper();
     }
 
     @Override
@@ -129,12 +132,10 @@ public class leftJoin extends query<Text, Text> {
     @Override
     public void writeConfig(Configuration conf) {
         conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1", getInput().getSeperator());
-        conf.setInt("SIMPLE_HIVE.JOIN.KEY.1",mainKey);
-        
+        conf.setInt("SIMPLE_HIVE.JOIN.KEY.1", mainKey);
+
         conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2", getOtherInput().getSeperator());
-        conf.setInt("SIMPLE_HIVE.JOIN.KEY.2",otherKey);
+        conf.setInt("SIMPLE_HIVE.JOIN.KEY.2", otherKey);
     }
-
-
 
 }
