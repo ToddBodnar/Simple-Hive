@@ -25,10 +25,10 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author toddbodnar
  */
-public class where extends query<Text, Text> {
+public class where extends query<Text, NullWritable> {
 
     booleanTest theQuery;
-    String partialQuery;
+    String partialQuery, parsedQuery;
 
     /**
      * given a partial query (the part after the where) of the form: _col1 <
@@ -39,9 +39,12 @@ public class where extends query<Text, Text> {
     public where(String partialQuery) {
         this.partialQuery = partialQuery;
 
-        result = new ramFile();
     }
-    private file result;
+    
+    public String toString()
+    {
+        return "Where query :"+partialQuery+". "+((parsedQuery==null)?"Not yet parsed":("Compiled to "+parsedQuery));
+    }
 
     public void parseInput() {
 
@@ -53,9 +56,9 @@ public class where extends query<Text, Text> {
                 split[ct] = "_col" + colNum;
             }
         }
-        partialQuery = split[0];
+        parsedQuery = split[0];
         for (int ct = 1; ct < split.length; ct++) {
-            partialQuery += " " + split[ct];
+            parsedQuery += " " + split[ct];
         }
 
         //theQuery = new booleanTest(partialQuery);
@@ -72,16 +75,16 @@ public class where extends query<Text, Text> {
     }
 
     @Override
-    public Mapper<Object, Text, Text, Text> getMapper() {
+    public Mapper<Object, Text, Text, NullWritable> getMapper() {
         return new WhereMapper();
     }
 
-    private static class WhereMapper extends Mapper<Object, Text, Text, Text> {
+    private static class WhereMapper extends Mapper<Object, Text, Text, NullWritable> {
 
         private booleanTest theQuery;
 
         public void setup(Context cont) {
-            System.out.println(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
+            Logger.getGlobal().warning("Where "+cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
             theQuery = new booleanTest(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
         }
 
@@ -103,7 +106,7 @@ public class where extends query<Text, Text> {
 
     @Override
     public Class getValueType() {
-        return Text.class;
+        return NullWritable.class;
     }
 
     public void setInput(table in) {
@@ -118,12 +121,12 @@ public class where extends query<Text, Text> {
         table result = new table(new ramFile(), getInput().getColNames());
         result.setSeperator(getInput().getSeperator());
         super.setOutput(result);
-        return result;
+        return super.getOutput();
     }
 
     @Override
     public void writeConfig(Configuration conf) {
-        conf.set("SIMPLE_HIVE.WHERE.QUERY", partialQuery);
+        conf.set("SIMPLE_HIVE.WHERE.QUERY", parsedQuery);
         conf.set("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR", getInput().getSeperator());
     }
 
