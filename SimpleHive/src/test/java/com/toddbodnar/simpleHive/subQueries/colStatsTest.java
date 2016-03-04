@@ -52,7 +52,7 @@ public class colStatsTest {
     @Test
     public void testStats() throws IOException, InterruptedException
     {
-        colStats cs = new colStats(1);
+        colStats cs = new colStats(1,-1);
         cs.setInput(db.getTable("people"));
         SimpleHadoopDriver.run(cs, true);
         
