@@ -61,6 +61,8 @@ public class table {
     {
         if(storage.hasNext())
             row = storage.readNextLine().split(seperator);
+        else
+            row = null;
     }
     
     public boolean hasNextRow()
@@ -99,7 +101,7 @@ public class table {
         }
         result+="\n";
         first();
-        if(!hasNextRow())
+        if(row == null)
             return result;
         for(int ct=0;ct<100;ct++)
         {

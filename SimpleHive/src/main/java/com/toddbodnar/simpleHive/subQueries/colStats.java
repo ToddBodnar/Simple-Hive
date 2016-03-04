@@ -106,6 +106,14 @@ public class colStats extends query<DoubleWritable, Text> {
             cont.write(key, new Text(result));
         }
     }
+    
+    public String toString()
+    {
+        if(getInput()==null)
+            return "Column Statistics on "+statsCol+" grouped by "+groupByCol;
+        else
+            return "Column Statistics on "+getInput().getColName(statsCol)+" grouped by "+(groupByCol==-1?"Nothing":getInput().getColName(groupByCol));
+    }
 
     @Override
     public Class getKeyType() {
