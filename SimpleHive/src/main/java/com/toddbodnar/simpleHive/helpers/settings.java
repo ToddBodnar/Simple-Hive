@@ -19,5 +19,5 @@ public class settings {
     public static Configuration conf = null;
     
     public static String hdfs_prefix = "";
-    public static String config_files_xml[] = {"conf/core-site.xml","conf/hdfs-site.xml","conf/mapred-site.xml"};
+    public static String config_files_xml[] = {"conf/core-site.xml","conf/hdfs-site.xml","conf/mapred-site.xml","conf/yarn-site.xml"};
 }

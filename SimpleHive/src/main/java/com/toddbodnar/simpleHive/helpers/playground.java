@@ -16,7 +16,7 @@ import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
 import com.toddbodnar.simpleHive.IO.hdfsFile;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.colStats;
-import com.toddbodnar.simpleHive.subQueries.leftJoin;
+import com.toddbodnar.simpleHive.subQueries.join;
 import com.toddbodnar.simpleHive.subQueries.query;
 import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
@@ -66,7 +66,7 @@ public class playground {
         System.out.println(aSelect.getOutput().print());
         
         System.out.println("select * from people left join ships on ship_id = id");
-        leftJoin join = new leftJoin(0,2);
+        join join = new join(0,2);
         join.setInput(db.getTable("ships"));
         join.setOtherInput(db.getTable("people"));
         SimpleHadoopDriver.run(join, true);

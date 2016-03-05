@@ -9,17 +9,23 @@ import com.toddbodnar.simpleHive.helpers.GetConfiguration;
 import com.toddbodnar.simpleHive.helpers.settings;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 
 /**
  *
@@ -55,15 +61,7 @@ public class hdfsFile extends fileFile{
     {
         location = theLocation;
         
-        try {
-            FileSystem fs = FileSystem.get(GetConfiguration.get());
-            in = new BufferedReader(new InputStreamReader(fs.open(location)));
-            //out = new BufferedWriter(new OutputStreamWriter(fs.append(location)));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        resetStream();
     }
    
 
@@ -74,9 +72,39 @@ public class hdfsFile extends fileFile{
             if(out!=null)
                 out.close();
             writing = false;
-            in.close();
+            if(in!=null)
+                in.close();
             FileSystem fs = FileSystem.get(GetConfiguration.get());
-            in = new BufferedReader(new InputStreamReader(fs.open(location)));
+            
+            if(fs.isFile(location))
+            {
+                LinkedList<FileStatus> file = new LinkedList<>();
+                file.add(fs.getFileStatus(location));
+                theFiles = file.iterator();
+            }
+            else
+            {
+                LinkedList<FileStatus> files = new LinkedList<>();
+                RemoteIterator<LocatedFileStatus> fileremote = fs.listFiles(location, true);
+                while(fileremote.hasNext())
+                    files.add(fileremote.next());
+                theFiles = files.iterator();
+            }
+            
+            FileStatus nextFileStatus;
+            do
+            {
+                if(!theFiles.hasNext())
+                {
+                    System.err.println("WARNING: File is Empty");
+                    super.next=null;
+                    return;
+                }
+                nextFileStatus = theFiles.next();
+            }while(fs.isDirectory(nextFileStatus.getPath())|| nextFileStatus.getLen()==0);
+                
+            
+            in = new BufferedReader(new InputStreamReader(fs.open(nextFileStatus.getPath())));
             next = in.readLine();
             
             //out.flush();
@@ -101,7 +129,29 @@ public class hdfsFile extends fileFile{
         if(writing)
             resetStream();
         
-        return super.readNextLine();
+        String toReturn = next;
+        try {
+            FileSystem fs = FileSystem.get(GetConfiguration.get());
+            
+            next = in.readLine();
+            
+            if(next ==null)//at end of current file
+            {
+                FileStatus nextFileStatus;
+                do {
+                    if (!theFiles.hasNext()) {
+                        super.next = null;
+                        return toReturn;
+                    }
+                    nextFileStatus = theFiles.next();
+                } while (fs.isDirectory(nextFileStatus.getPath()) || nextFileStatus.getLen() == 0);
+                in = new BufferedReader(new InputStreamReader(fs.open(nextFileStatus.getPath())));
+                next = in.readLine();
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(fileFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return toReturn;
     }
     
     public void append(String line)
@@ -121,6 +171,11 @@ public class hdfsFile extends fileFile{
         
     }
     
+    public Path getPath()
+    {
+        return location;
+    }
+    private Iterator<FileStatus> theFiles;
     private boolean writing = false;
     private Path location;
 }

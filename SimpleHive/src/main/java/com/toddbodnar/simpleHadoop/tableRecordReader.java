@@ -20,7 +20,7 @@ import org.apache.hadoop.mapreduce.TaskAttemptContext;
  *
  * @author toddbodnar
  */
-public class tableRecordReader extends RecordReader<IntWritable[],Text>{
+public class tableRecordReader extends RecordReader<Object,Text>{
 
     LinkedList<table> theTables;
     
@@ -75,7 +75,7 @@ public class tableRecordReader extends RecordReader<IntWritable[],Text>{
     }
 
     @Override
-    public IntWritable[] getCurrentKey() throws IOException, InterruptedException {
+    public Object getCurrentKey() throws IOException, InterruptedException {
         return new IntWritable[]{new IntWritable(currentTableItr),new IntWritable(lineNumber)};
     }
 

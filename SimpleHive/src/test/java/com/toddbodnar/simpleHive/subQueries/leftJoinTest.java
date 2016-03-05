@@ -50,7 +50,7 @@ public class leftJoinTest {
     @Test
     public void goodJoinTest() throws IOException, InterruptedException
     {
-        leftJoin left = new leftJoin(1,1);
+        join left = new join(1,1);
         left.setInput(db.getTable("table one"));
         left.setOtherInput(db.getTable("table two"));
         
@@ -62,7 +62,7 @@ public class leftJoinTest {
     @Test
     public void noMatchJoinTest() throws IOException, InterruptedException
     {
-        leftJoin left = new leftJoin(0,0);
+        join left = new join(0,0);
         left.setInput(db.getTable("table one"));
         left.setOtherInput(db.getTable("table two"));
         
