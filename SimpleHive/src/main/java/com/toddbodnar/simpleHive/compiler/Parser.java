@@ -16,7 +16,7 @@ import com.toddbodnar.simpleHive.subQueries.select;
 import com.toddbodnar.simpleHive.subQueries.where;
 import com.toddbodnar.simpleHive.metastore.table;
 import com.toddbodnar.simpleHive.subQueries.colStats;
-import com.toddbodnar.simpleHive.subQueries.leftJoin;
+import com.toddbodnar.simpleHive.subQueries.join;
 
 /**
  * Builds a Parser tree from a set of tokens
@@ -119,7 +119,7 @@ public class Parser {
                     throw new Exception("SQL Error: Could not find column '" + t2JoinCol + "' in table " + joinTable);
                 }
 
-                leftJoin join = new leftJoin(t1JoinColNum, t2JoinColNum);
+                join join = new join(t1JoinColNum, t2JoinColNum);
                 join.setInput(fromTable);
                 join.setOtherInput(joinTable);
 

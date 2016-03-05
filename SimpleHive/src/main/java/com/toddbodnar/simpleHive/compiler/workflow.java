@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.toddbodnar.simpleHadoop.distributedHadoopDriver;
 import com.toddbodnar.simpleHadoop.SimpleHadoopDriver;
-import com.toddbodnar.simpleHive.subQueries.leftJoin;
+import com.toddbodnar.simpleHive.subQueries.join;
 import com.toddbodnar.simpleHive.subQueries.query;
 
 /**
@@ -48,9 +48,9 @@ public class workflow {
         if(getPreReqs().size()>0)
             job.setInput(getPreReqs().get(0).job.getOutput());
         
-        if(job.getClass().equals(leftJoin.class) && getPreReqs().size()>1)
+        if(job.getClass().equals(join.class) && getPreReqs().size()>1)
         {
-            ((leftJoin)job).setOtherInput(getPreReqs().get(1).job.getOutput());
+            ((join)job).setOtherInput(getPreReqs().get(1).job.getOutput());
         }
         
         try {

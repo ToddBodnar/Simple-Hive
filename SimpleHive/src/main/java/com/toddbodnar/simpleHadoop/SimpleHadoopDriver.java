@@ -9,7 +9,7 @@ import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHive.helpers.pair;
 import com.toddbodnar.simpleHive.metastore.table;
-import com.toddbodnar.simpleHive.subQueries.leftJoin;
+import com.toddbodnar.simpleHive.subQueries.join;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -69,8 +69,8 @@ public class SimpleHadoopDriver {
 
         //if(verbose)
         //  System.out.println("Init "+theJob.getClass().toString());
-        if (theJob.getClass().equals(leftJoin.class)) {
-            records.addMoreTables(((leftJoin) theJob).getOtherInput());
+        if (theJob.getClass().equals(join.class)) {
+            records.addMoreTables(((join) theJob).getOtherInput());
         }
 
         theJob.writeConfig(cont.getConfiguration());

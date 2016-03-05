@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
+import com.toddbodnar.simpleHive.helpers.controlCharacterConverter;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
@@ -22,7 +23,7 @@ import org.apache.hadoop.mapreduce.Reducer;
  *
  * @author toddbodnar
  */
-public class leftJoin extends query<Text, Text> {
+public class join extends query<Text, Text> {
 
     /**
      * Joins two tables
@@ -30,7 +31,7 @@ public class leftJoin extends query<Text, Text> {
      * @param key the location of the key in the table set by setInput
      * @param otherkey the location of the key in the table, other
      */
-    public leftJoin(int key, int otherKey) {
+    public join(int key, int otherKey) {
         mainKey = key;
         this.otherKey = otherKey;
     }
@@ -78,21 +79,23 @@ public class leftJoin extends query<Text, Text> {
     private static class LeftJoinReducer extends Reducer<Text, Text, Text, Text> {
 
         public void reduce(Text key, Iterable<Text> values, Context cont) throws IOException, InterruptedException {
-            String left, right;
-            left = right = null;
+
+            LinkedList<String> right = new LinkedList<>();
+            LinkedList<String> left = new LinkedList<>();
             for (Text input : values) {
                 if (input.toString().charAt(0) == '0') {
-                    left = input.toString().substring(1);
+                    left.add(input.toString().substring(1));
                 } else {
-                    right = input.toString().substring(1);
+                    right.add(input.toString().substring(1));
                 }
             }
-            if (left == null || right == null)//only join if both tables have a matching key
-            {
-                return;
-            }
+            for(String leftString:left)
+                for(String rightString:right)
+                {
+                    cont.write(new Text(leftString + "\001" + rightString), null);
+                }
 
-            cont.write(new Text(left + "\0" + right), null);
+            
 
         }
     }
@@ -104,9 +107,9 @@ public class leftJoin extends query<Text, Text> {
             int tableId = ((IntWritable[]) key)[0].get();
 
             if (tableId == 1) {
-                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
+                cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
             } else if (tableId == 2) {
-                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
+                cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
 
             } else {
                 throw new IOException("Invalid table number, expected 1 or 2, got " + tableId);
@@ -120,7 +123,7 @@ public class leftJoin extends query<Text, Text> {
 
             
             
-                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
+                cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
             
         }
     }
@@ -131,7 +134,7 @@ public class leftJoin extends query<Text, Text> {
 
            
             
-                cont.write(new Text(line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
+                cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
             
         }
     }
@@ -158,10 +161,10 @@ public class leftJoin extends query<Text, Text> {
 
     @Override
     public void writeConfig(Configuration conf) {
-        conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1", getInput().getSeperator());
+        conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1", controlCharacterConverter.convertToReadable(getInput().getSeperator()));
         conf.setInt("SIMPLE_HIVE.JOIN.KEY.1", mainKey);
 
-        conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2", getOtherInput().getSeperator());
+        conf.set("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2", controlCharacterConverter.convertToReadable(getOtherInput().getSeperator()));
         conf.setInt("SIMPLE_HIVE.JOIN.KEY.2", otherKey);
     }
 
