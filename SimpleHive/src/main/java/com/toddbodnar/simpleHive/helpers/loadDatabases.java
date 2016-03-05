@@ -38,23 +38,26 @@ public class loadDatabases {
     {
         database result = new database("Star Trek");
         ramFile r = new ramFile();
-        r.append("1234\0"+"23\0"+"1\0"+"Kirk");
-        r.append("2345\0"+"45\0"+"1\0"+"Spock");
-        r.append("3456\0"+"34\0"+"1\0"+"Bones");
-        r.append("4353\0"+"35\0"+"2\0"+"Janeway");
-        r.append("3462\0"+"45\0"+"2\0"+"Tuvok");
-        r.append("246\0"+"75\0"+"3\0"+"Picard");
-        r.append("2364\0"+"8\0"+"3\0"+"Data");
+        r.append("1234\001"+"23\001"+"1\001"+"Kirk");
+        r.append("2345\001"+"45\001"+"1\001"+"Spock");
+        r.append("3456\001"+"34\001"+"1\001"+"Bones");
+        r.append("4353\001"+"35\001"+"2\001"+"Janeway");
+        r.append("3462\001"+"45\001"+"2\001"+"Tuvok");
+        r.append("246\001"+"75\001"+"3\001"+"Picard");
+        r.append("2364\001"+"8\001"+"3\001"+"Data");
         table t = new table(r,new String[]{"id","age","ship","name"});
+        t.setSeperator("\001");
         result.addTable("people", t);
         
         
         r = new ramFile();
-        r.append("1\0"+"Enterprise");
-        r.append("2\0"+"Voyager");
-        r.append("3\0"+"Enterprise D");
+        r.append("1\001"+"Enterprise");
+        r.append("2\001"+"Voyager");
+        r.append("3\001"+"Enterprise D");
         
         t = new table(r,new String[]{"shipID","shipname"});
+        t.setSeperator("\001");
+        
         result.addTable("ships",t);
         return result;
     }

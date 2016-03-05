@@ -8,6 +8,7 @@ package com.toddbodnar.simpleHive.subQueries;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
+import com.toddbodnar.simpleHive.helpers.controlCharacterConverter;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
@@ -62,7 +63,7 @@ public class select extends query<Text, Object> {
     private static class selectMapper extends Mapper<Object, Text, Text, Object> {
 
         private boolean passThrough;
-        public String names[];
+        public String names[],seperator;
         private Object[] value;
         private boolean[] variable;
 
@@ -107,7 +108,7 @@ public class select extends query<Text, Object> {
         }
 
         public void setup(Context cont) {
-
+            seperator = controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR"));
             parseInput(cont.getConfiguration());
         }
 
@@ -118,14 +119,14 @@ public class select extends query<Text, Object> {
                 return;
             }
 
-            Object next[] = line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR"));
+            Object next[] = line.toString().split(seperator);
             String result = "";
             boolean first = true;
             for (int ct = 0; ct < variable.length; ct++) {
                 if (first) {
                     first = false;
                 } else {
-                    result += cont.getConfiguration().get("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR");
+                    result += seperator;
                 }
 
                 if (variable[ct]) {
@@ -180,7 +181,7 @@ public class select extends query<Text, Object> {
     @Override
     public void writeConfig(Configuration conf) {
         conf.set("SIMPLE_HIVE.SELECT.QUERY_STR", query);
-        conf.set("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR", getInput().getSeperator());
+        conf.set("SIMPLE_HIVE.SELECT.INPUT_SEPERATOR", controlCharacterConverter.convertToReadable(getInput().getSeperator()));
         conf.setStrings("SIMPLE_HIVE.SELECT.INPUT_COL_NAMES", getInput().getColNames());
     }
 

@@ -12,6 +12,7 @@ import com.toddbodnar.simpleHive.IO.file;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
 import com.toddbodnar.simpleHadoop.MapReduceJob;
+import com.toddbodnar.simpleHive.helpers.controlCharacterConverter;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
@@ -82,15 +83,16 @@ public class where extends query<Text, NullWritable> {
     private static class WhereMapper extends Mapper<Object, Text, Text, NullWritable> {
 
         private booleanTest theQuery;
-
+        private String seperator;
         public void setup(Context cont) {
             Logger.getGlobal().warning("Where "+cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
+            seperator = controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR"));
             theQuery = new booleanTest(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.QUERY"));
         }
 
         public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
             try {
-                if (theQuery.evaluate((Object[]) line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR")))) {
+                if (theQuery.evaluate((Object[]) line.toString().split(seperator))) {
                     cont.write(line, NullWritable.get());
                 }
             } catch (Exception ex) {
@@ -127,7 +129,7 @@ public class where extends query<Text, NullWritable> {
     @Override
     public void writeConfig(Configuration conf) {
         conf.set("SIMPLE_HIVE.WHERE.QUERY", parsedQuery);
-        conf.set("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR", getInput().getSeperator());
+        conf.set("SIMPLE_HIVE.WHERE.INPUT_SEPERATOR", controlCharacterConverter.convertToReadable(getInput().getSeperator()));
     }
 
 }

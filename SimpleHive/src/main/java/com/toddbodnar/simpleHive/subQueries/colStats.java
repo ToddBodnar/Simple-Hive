@@ -8,11 +8,13 @@ package com.toddbodnar.simpleHive.subQueries;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHive.IO.ramFile;
 import com.toddbodnar.simpleHadoop.simpleContext;
+import com.toddbodnar.simpleHive.helpers.controlCharacterConverter;
 import com.toddbodnar.simpleHive.metastore.table;
 import java.io.IOException;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -40,7 +42,6 @@ public class colStats extends query<DoubleWritable, Text> {
     }
 
     private int groupByCol, statsCol;
-    private ramFile resultStorage;
     private static String stats[] = new String[]{"group", "max", "min", "avg", "sum", "count"};
 
     @Override
@@ -49,7 +50,7 @@ public class colStats extends query<DoubleWritable, Text> {
             return super.getOutput();
         }
         table result = new table(new ramFile(), stats);
-        result.setSeperator(getInput().getSeperator());
+        result.setSeperator("\001");
         super.setOutput(result);
         return result;
     }
@@ -60,10 +61,14 @@ public class colStats extends query<DoubleWritable, Text> {
     }
 
     private static class ColStatsMapper extends Mapper<Object, Text, Text, DoubleWritable> {
-
+        private String separator;
+        public void setup(Context cont)
+        {
+            separator = controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR"));
+        }
         public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
-            String row[] = line.toString().split(cont.getConfiguration().get("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR"));
+            String row[] = line.toString().split(separator);
             String groupKey = "*";
             if (cont.getConfiguration().getInt("SIMPLE_HIVE.COLSTATS.GROUPBY", -1) != -1) {
                 groupKey = row[cont.getConfiguration().getInt("SIMPLE_HIVE.COLSTATS.GROUPBY", -1)].toString();
@@ -80,7 +85,7 @@ public class colStats extends query<DoubleWritable, Text> {
 
     }
 
-    private static class ColStatsReducer extends Reducer<Text, DoubleWritable, Text, Text> {
+    private static class ColStatsReducer extends Reducer<Text, DoubleWritable, Text, NullWritable> {
 
         public void reduce(Text key, Iterable<DoubleWritable> values, Context cont) throws IOException, InterruptedException {
             double min = Double.MAX_VALUE;
@@ -102,8 +107,8 @@ public class colStats extends query<DoubleWritable, Text> {
 
             double avg = sum / ct * 1.0;
 
-            String result = max + "\0" + min + "\0" + avg + "\0" + sum + "\0" + ct;
-            cont.write(key, new Text(result));
+            String result = key+ "\001"+max + "\001" + min + "\001" + avg + "\001" + sum + "\001" + ct;
+            cont.write(new Text(result), NullWritable.get());
         }
     }
     
@@ -129,6 +134,6 @@ public class colStats extends query<DoubleWritable, Text> {
     public void writeConfig(Configuration conf) {
         conf.setInt("SIMPLE_HIVE.COLSTATS.COLUMN", statsCol);
         conf.setInt("SIMPLE_HIVE.COLSTATS.GROUPBY", groupByCol);
-        conf.set("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR", getInput().getSeperator());
+        conf.set("SIMPLE_HIVE.COLSTATS.INPUT_SEPERATOR", controlCharacterConverter.convertToReadable(getInput().getSeperator()));
     }
 }
