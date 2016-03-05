@@ -36,7 +36,7 @@ public class loadDatabases {
     }
     public static database starTrek()
     {
-        database result = new database("Star Trek");
+        database result = new database("Star_Trek");
         ramFile r = new ramFile();
         r.append("1234\0"+"23\0"+"1\0"+"Kirk");
         r.append("2345\0"+"45\0"+"1\0"+"Spock");
@@ -66,7 +66,7 @@ public class loadDatabases {
      */
     public static database battleStarGalacticaGame()
     {
-        database result = new database("BSG Game Info");
+        database result = new database("BSG_Game_Info");
         ramFile r = new ramFile();
         r.append("0\0Base Game");
         r.append("1\0Pegasus");
