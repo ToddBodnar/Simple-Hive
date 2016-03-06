@@ -31,6 +31,20 @@ public class loadDatabases {
     
         result.addTable("table two",t2);
         
+        ramFile r2tab = new ramFile();
+        r2tab.append("3\t2\t1");
+        table t2tab = new table(r2tab,new String[]{"col_1","col_2","col_3"});
+        t2tab.setSeperator("\t");
+    
+        result.addTable("table two tab separated",t2tab);
+        
+        ramFile r2null = new ramFile();
+        r2null.append("3\0012\0011");
+        table t2null = new table(r2null,new String[]{"col_1","col_2","col_3"});
+        t2null.setSeperator("\001");
+    
+        result.addTable("table two null separated",t2null);
+        
         
         return result;
     }

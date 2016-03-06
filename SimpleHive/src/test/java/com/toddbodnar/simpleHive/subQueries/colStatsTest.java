@@ -56,7 +56,7 @@ public class colStatsTest {
         cs.setInput(db.getTable("people"));
         SimpleHadoopDriver.run(cs, true);
         
-        assertEquals("*"+"\0"+75.0 + "\0" + 8.0 + "\0" + (265/7.0) + "\0" + 265.0 + "\0" + 7,cs.getOutput().getFile().readNextLine());
+        assertEquals("*"+"\001"+75.0 + "\001" + 8.0 + "\001" + (265/7.0) + "\001" + 265.0 + "\001" + 7,cs.getOutput().getFile().readNextLine());
     }
     
     /**
@@ -69,20 +69,23 @@ public class colStatsTest {
         cs.setInput(db.getTable("people"));
         SimpleHadoopDriver.run(cs, true);
         String in;
+        boolean notests = true;
         while((in = cs.getOutput().getFile().readNextLine())!=null)
         {
+            notests = false;
             switch(in.charAt(0))
             {
                 case 1:
-                    assertEquals("1"+"\0"+45.0 + "\0" + 23.0 + "\0" + (102/3.0) + "\0" + 102.0 + "\0" + 3,in);
+                    assertEquals("1"+"\001"+45.0 + "\001" + 23.0 + "\001" + (102/3.0) + "\001" + 102.0 + "\001" + 3,in);
                     break;
                 case 2:
-                    assertEquals("2"+"\0"+45.0 + "\0" + 35.0 + "\0" + (80/2.0) + "\0" + 80.0 + "\0" + 2,in);
+                    assertEquals("2"+"\001"+45.0 + "\001" + 35.0 + "\001" + (80/2.0) + "\001" + 80.0 + "\001" + 2,in);
                     break;
                 case 3:
-                    assertEquals("3"+"\0"+75.0 + "\0" + 8.0 + "\0" + (83/2.0) + "\0" + 83.0 + "\0" + 2,in);
+                    assertEquals("3"+"\001"+75.0 + "\001" + 8.0 + "\001" + (83/2.0) + "\001" + 83.0 + "\001" + 2,in);
                     break;
             }
         }
+        assert(!notests);
     }
 }

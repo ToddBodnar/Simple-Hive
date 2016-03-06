@@ -82,20 +82,27 @@ public class join extends query<Text, Text> {
 
             LinkedList<String> right = new LinkedList<>();
             LinkedList<String> left = new LinkedList<>();
+            String leftSep = controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1"));
+            String rightSep = controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2"));
+
+            String seperator = "\001";
+
+            if (leftSep.equals(rightSep)) {
+                seperator = leftSep;
+            }
+
             for (Text input : values) {
                 if (input.toString().charAt(0) == '0') {
-                    left.add(input.toString().substring(1));
+                    left.add(input.toString().substring(1).replace(leftSep, seperator));
                 } else {
-                    right.add(input.toString().substring(1));
+                    right.add(input.toString().substring(1).replace(rightSep, seperator));
                 }
             }
-            for(String leftString:left)
-                for(String rightString:right)
-                {
-                    cont.write(new Text(leftString + "\001" + rightString), null);
+            for (String leftString : left) {
+                for (String rightString : right) {
+                    cont.write(new Text(leftString + seperator + rightString), null);
                 }
-
-            
+            }
 
         }
     }
@@ -116,26 +123,22 @@ public class join extends query<Text, Text> {
             }
         }
     }
-    
+
     private static class LeftJoinMapperCombinedOne extends Mapper<Object, Text, Text, Text> {
 
         public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
-            
-            
-                cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
-            
+            cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.1")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.1", -1)]), new Text('0' + line.toString()));
+
         }
     }
-    
+
     private static class LeftJoinMapperCombinedTwo extends Mapper<Object, Text, Text, Text> {
 
         public void map(Object key, Text line, Mapper.Context cont) throws IOException, InterruptedException {
 
-           
-            
-                cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
-            
+            cont.write(new Text(line.toString().split(controlCharacterConverter.convertFromReadable(cont.getConfiguration().get("SIMPLE_HIVE.JOIN.INPUT_SEPERATOR.2")))[cont.getConfiguration().getInt("SIMPLE_HIVE.JOIN.KEY.2", -1)]), new Text('1' + line.toString()));
+
         }
     }
 
@@ -143,10 +146,9 @@ public class join extends query<Text, Text> {
     public Mapper getMapper() {
         return new LeftJoinMapperCombined();
     }
-    
-    public Mapper[] getMapperPairs()
-    {
-        return new Mapper[]{new LeftJoinMapperCombinedOne(),new LeftJoinMapperCombinedTwo()};
+
+    public Mapper[] getMapperPairs() {
+        return new Mapper[]{new LeftJoinMapperCombinedOne(), new LeftJoinMapperCombinedTwo()};
     }
 
     @Override

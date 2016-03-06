@@ -23,9 +23,9 @@ import static org.junit.Assert.*;
  *
  * @author toddbodnar
  */
-public class leftJoinTest {
+public class joinTest {
     private database db;
-    public leftJoinTest()
+    public joinTest()
     {
         db = loadDatabases.singleRow();
     }
@@ -48,7 +48,7 @@ public class leftJoinTest {
     }
 
     @Test
-    public void goodJoinTest() throws IOException, InterruptedException
+    public void goodJoinTestMatchingSeparators() throws IOException, InterruptedException
     {
         join left = new join(1,1);
         left.setInput(db.getTable("table one"));
@@ -56,7 +56,19 @@ public class leftJoinTest {
         
         SimpleHadoopDriver.run(left, true);
         
-        assertEquals("1,2,3"+"\0"+"3,2,1",left.getOutput().getFile().readNextLine());
+        assertEquals("1,2,3"+","+"3,2,1",left.getOutput().getFile().readNextLine());
+    }
+    
+    @Test
+    public void goodJoinTestNonMatchingSeparators() throws IOException, InterruptedException
+    {
+        join left = new join(1,1);
+        left.setInput(db.getTable("table one"));
+        left.setOtherInput(db.getTable("table two tab separated"));
+        
+        SimpleHadoopDriver.run(left, true);
+        
+        assertEquals("1\0012\0013"+"\001"+"3\0012\0011",left.getOutput().getFile().readNextLine());
     }
     
     @Test
