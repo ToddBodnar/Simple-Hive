@@ -54,7 +54,7 @@ public class whereTest {
 
         SimpleHadoopDriver.run(theWhere, true);
 
-        assertEquals("246\0" + "75\0" + "3\0" + "Picard",theWhere.getOutput().getFile().readNextLine());
+        assertEquals("246\001" + "75\001" + "3\001" + "Picard",theWhere.getOutput().getFile().readNextLine());
     }
 
     @Test
@@ -64,7 +64,7 @@ public class whereTest {
 
         SimpleHadoopDriver.run(theWhere, true);
 
-        assertEquals("3462\0" + "45\0" + "2\0" + "Tuvok",theWhere.getOutput().getFile().readNextLine());
+        assertEquals("3462\001" + "45\001" + "2\001" + "Tuvok",theWhere.getOutput().getFile().readNextLine());
     }
 
     @Test

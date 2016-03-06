@@ -390,6 +390,7 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
 
             HashMap<key, LinkedList<value>> data;
             Iterator<key> itr = null;
+            Configuration configuration;
             key next = null;
             public reduceContext(Configuration theConfig,HashMap<key, LinkedList<value>> results, Class keyClass, Class valueClass) throws IOException, InterruptedException {
                 /*super(theConfig, new TaskAttemptID(), new RawKeyValueIterator() {
@@ -419,6 +420,7 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
                     }
                 }, null, null, new NullRecordWriter(), null, null, null, keyClass,valueClass);*/
                 data = results;
+                configuration = theConfig;
             }
 
             @Override
@@ -497,7 +499,7 @@ public class simpleContext<mapInKey, mapInValue, key, value, reduceOutKey, reduc
 
             @Override
             public Configuration getConfiguration() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                return configuration;
             }
 
             @Override
