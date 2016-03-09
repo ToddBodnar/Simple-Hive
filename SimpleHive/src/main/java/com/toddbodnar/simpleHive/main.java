@@ -22,13 +22,16 @@ import org.apache.hadoop.conf.Configuration;
  * @author toddbodnar
  */
 public class main {
-    private static int contains(String args[], String val)
-    {
-        for(int ct=0;ct<args.length;ct++)
-            if(args[ct].equals(val))
+
+    private static int contains(String args[], String val) {
+        for (int ct = 0; ct < args.length; ct++) {
+            if (args[ct].equals(val)) {
                 return ct;
+            }
+        }
         return -1;
     }
+
     public static void init(String args[]) {
         if (contains(args, "--help") >= 0 || contains(args, "-h") >= 0) {
             System.out.println("TODO: Add help dialog. (sorry!)");
@@ -52,36 +55,51 @@ public class main {
         }
         settings.currentDB = loadDatabases.starTrek();
 
+        if (contains(args, "-D") >= 0) {
+            String dbname = args[contains(args, "-D") + 1];
+
+            if (dbname.equalsIgnoreCase("star_trek")) {
+                settings.currentDB = loadDatabases.starTrek();
+            } else if (dbname.equalsIgnoreCase("bsg_game")) {
+                settings.currentDB = loadDatabases.battleStarGalacticaGame();
+            } else {
+                System.err.println("Can't find table called: " + dbname);
+                System.exit(-2);
+            }
+
+        } else {
+            System.out.println("Using default metastore");
+        }
+
         System.out.println("Using database metastore: " + settings.currentDB.toString());
     }
-    public static void main(String args[])
-    {
+
+    public static void main(String args[]) {
         init(args);
-        
+
         Scanner in = new Scanner(System.in);
         in.useDelimiter("[\n\r;]+");
-        while(in.hasNext())
-        {
+        while (in.hasNext()) {
             String input = in.next();
-            if(input.length()==0)
+            if (input.length() == 0) {
                 continue;
-            if(input.equalsIgnoreCase("QUIT") || input.equalsIgnoreCase("EXIT"))
-            {
+            }
+            if (input.equalsIgnoreCase("QUIT") || input.equalsIgnoreCase("EXIT")) {
                 break;
             }
             try {
                 workflow wf = Parser.parse(lexer.lexStr(input));
-                if(wf!=null)
-                {
+                if (wf != null) {
                     wf.execute();
                     table result = wf.job.getOutput();
-                    if(result!=null)
+                    if (result != null) {
                         System.out.println(result.print());
+                    }
                 }
             } catch (Exception ex) {
                 Logger.getLogger(main.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         }
         System.out.println("Exiting");
     }
