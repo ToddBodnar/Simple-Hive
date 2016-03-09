@@ -8,6 +8,7 @@ package com.toddbodnar.simpleHive;
 import com.toddbodnar.simpleHive.compiler.Parser;
 import com.toddbodnar.simpleHive.compiler.lexer;
 import com.toddbodnar.simpleHive.compiler.workflow;
+import com.toddbodnar.simpleHive.helpers.giveHelp;
 import com.toddbodnar.simpleHive.helpers.loadDatabases;
 import com.toddbodnar.simpleHive.helpers.settings;
 import java.util.Scanner;
@@ -34,11 +35,11 @@ public class main {
 
     public static void init(String args[]) {
         if (contains(args, "--help") >= 0 || contains(args, "-h") >= 0) {
-            System.out.println("TODO: Add help dialog. (sorry!)");
+            System.out.println(giveHelp.usedHelpFlag());
             System.exit(0);
         }
 
-        System.out.println("Hello and welcome to Simple Hive (todo: replace intro)");
+        System.out.println("Simple Hive v "+settings.version);
 
         if (contains(args, "--local") < 0) {
             System.out.println("Trying to connect to default hadoop system");
