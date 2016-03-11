@@ -46,6 +46,14 @@ public class garbage_collector {
     
     public static String stats()
     {
-        return "TODO: gc stats!";
+        switch(auto_files.size())
+        {
+            case 0:
+                return "Garbage collector is currently not tracking any files to be collected.";
+            case 1:
+                return "Garbage collector currently has 1 file that may be collected.";
+            default:
+                return "Garbage collector currently has "+auto_files.size()+" files that may be collected.";
+        }
     }
 }
