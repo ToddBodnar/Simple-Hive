@@ -37,6 +37,7 @@ public class garbage_collector {
             //Store them in the new_auto_files if yes, otherwise delete (f.delete())
             
             f.delete();
+            removed ++;
         }
         
         auto_files = new_auto_files;

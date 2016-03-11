@@ -10,6 +10,7 @@ import com.toddbodnar.simpleHive.helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHadoop.distributedHadoopDriver;
+import com.toddbodnar.simpleHive.helpers.garbage_collector;
 import com.toddbodnar.simpleHive.helpers.giveHelp;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.printString;
@@ -30,19 +31,19 @@ import com.toddbodnar.simpleHive.subQueries.join;
 public class Parser {
 
     public static workflow parse(LinkedList<String> tokens) throws Exception {
+        LinkedList<String> partial = (LinkedList<String>) tokens.clone();
+        if(partial.size() > 0)
+            partial.removeFirst();
+            
         if (tokens.size() < 1) {
             throw new Exception("Parse exception (empty string)");
         }
 
         if (tokens.get(0).equalsIgnoreCase("select")) {
-            LinkedList<String> partial = (LinkedList<String>) tokens.clone();
-            partial.removeFirst();
             return parseSelect(partial);
         }
 
         if (tokens.get(0).equalsIgnoreCase("colstats")) {
-            LinkedList<String> partial = (LinkedList<String>) tokens.clone();
-            partial.removeFirst();
             return parseColStats(partial);
         }
 
@@ -63,9 +64,34 @@ public class Parser {
             parseHelp(tokens);
             return null;
         }
+        
+        if(tokens.get(0).equalsIgnoreCase("gc"))
+        {
+            return parseGC(partial);
+        }
 
         return null;
 
+    }
+    
+    private static workflow parseGC(LinkedList<String> partial) throws Exception
+    {
+        if(partial.size() == 0)
+        {
+            System.out.println("Running Garbage Collector...");
+            int removed = garbage_collector.collect();
+            System.out.println("Removed "+removed+" file(s).");
+        }
+        else if (partial.get(0).equalsIgnoreCase("stats"))
+        {
+            System.out.println(garbage_collector.stats());
+        }
+        else
+        {
+            throw new Exception("Parse Error: Expected '' or 'stats', got "+partial.get(0));
+        }
+        
+        return null;
     }
 
     private static workflow parseSelect(LinkedList<String> partial) throws Exception {

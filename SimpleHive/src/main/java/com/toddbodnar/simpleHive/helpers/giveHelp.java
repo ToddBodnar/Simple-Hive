@@ -79,12 +79,23 @@ public class giveHelp {
                 " exit\n"+
                 " quit";
         
+        String gc = ""+
+                " gc [stats]\n"+
+                "\n"+
+                " Either runs the garbage collector (to remove temporary files) or displays statistics about the currently tracked temporary files.\n"+
+                "\n"+
+                " Example Udage:\n"+
+                " --------------\n"+
+                " gc\n"+
+                " gc stats";
+        
         contents.put("select", select);
         contents.put("join", join);
         contents.put("where", where);
         contents.put("colstats", colstats);
         contents.put("help", help);
         contents.put("exit", exit);
+        contents.put("gc", gc);
     }
     /**
      * What do say when the user uses the -h or --help flags in the command line
