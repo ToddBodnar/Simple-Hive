@@ -64,5 +64,11 @@ public class ramFile implements file{
         result+="]}";
         return result;
     }
+
+    @Override
+    public void delete() {
+        //just remove the pointer to the data and allow it to be GC'ed 
+        data = null;
+    }
     
 }

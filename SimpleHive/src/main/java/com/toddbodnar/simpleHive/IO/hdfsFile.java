@@ -175,6 +175,18 @@ public class hdfsFile extends fileFile{
     {
         return location;
     }
+    
+    public void delete()
+    {
+        try {
+            FileSystem fs = FileSystem.get(GetConfiguration.get());
+
+            fs.delete(location, true);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(hdfsFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     private Iterator<FileStatus> theFiles;
     private boolean writing = false;
     private Path location;

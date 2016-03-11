@@ -37,4 +37,9 @@ public interface file{
      * @return 
      */
     public String toJson();
+    
+    /**
+     * Removes the file from the underlying filesystem
+     */
+    public void delete();
 }
