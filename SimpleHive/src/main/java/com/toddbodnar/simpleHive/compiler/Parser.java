@@ -10,6 +10,7 @@ import com.toddbodnar.simpleHive.helpers.settings;
 import java.util.Iterator;
 import java.util.LinkedList;
 import com.toddbodnar.simpleHadoop.distributedHadoopDriver;
+import com.toddbodnar.simpleHive.helpers.giveHelp;
 import com.toddbodnar.simpleHive.metastore.database;
 import com.toddbodnar.simpleHive.subQueries.printString;
 import com.toddbodnar.simpleHive.subQueries.select;
@@ -55,6 +56,12 @@ public class Parser {
                 throw new Exception("Parse exception (unknown table " + tokens.get(1) + ")");
             }
             return new workflow(new printString(t.describe()));
+        }
+        
+        if(tokens.get(0).equalsIgnoreCase("help"))
+        {
+            parseHelp(tokens);
+            return null;
         }
 
         return null;
@@ -207,5 +214,12 @@ public class Parser {
         settings.currentDB = loadDatabases.starTrek();
         System.out.println(parse(lexer.lexStr("select 2,name, something from people")));
         System.out.println(parse(lexer.lexStr("select 2,name, something from people where _col1 >_col4")));
+    }
+
+    private static void parseHelp(LinkedList<String> tokens) {
+        if(tokens.size() == 1)
+            System.out.println(giveHelp.help());
+        else
+            System.out.println(giveHelp.help(tokens.get(1)));
     }
 }

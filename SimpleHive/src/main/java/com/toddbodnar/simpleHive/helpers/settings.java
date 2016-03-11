@@ -20,4 +20,6 @@ public class settings {
     
     public static String hdfs_prefix = "";
     public static String config_files_xml[] = {"conf/core-site.xml","conf/hdfs-site.xml","conf/mapred-site.xml","conf/yarn-site.xml"};
+    
+    public static final String version = "0.1";
 }

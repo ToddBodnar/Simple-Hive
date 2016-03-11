@@ -60,6 +60,7 @@ public class laggyRamFileTest {
         assertEquals(expResult, result);
         
         file.readNextLine();
+        file.readNextLine();
         assertEquals(file.hasNext(),false);
     }
 
