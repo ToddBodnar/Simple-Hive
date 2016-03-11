@@ -29,13 +29,19 @@ public class garbage_collector {
     {
         //files not removed by the gc call
         HashSet<file> new_auto_files = new HashSet<file>();
-        
+        int removed = 0;
         for(file f:auto_files)
         {
             //TODO: test if auto_files have been added to metastore
+            //Which isn't actually supported yet
+            //Store them in the new_auto_files if yes, otherwise delete (f.delete())
             
-            //TODO: remove file if not
+            f.delete();
         }
+        
+        auto_files = new_auto_files;
+        
+        return removed;
     }
     
     public static String stats()

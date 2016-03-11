@@ -92,4 +92,9 @@ public class fileFile implements file{
     public String toJson() {
         return "{type:fileFile,file:"+theFile.toString()+"}";
     }
+
+    @Override
+    public void delete() {
+        theFile.delete();
+    }
 }
