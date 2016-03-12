@@ -39,43 +39,44 @@ public class Parser {
         if (tokens.size() < 1) {
             throw new ParseException("Parse exception (empty string)",0);
         }
-
-        if (tokens.get(0).equalsIgnoreCase("select")) {
-            return parseSelect(partial);
-        }
-
-        if (tokens.get(0).equalsIgnoreCase("colstats")) {
-            return parseColStats(partial);
-        }
-
-        if (tokens.get(0).equalsIgnoreCase("show") && tokens.get(1).equalsIgnoreCase("tables")) {
-            System.out.println(settings.currentDB.showTables());
-            return null;
-        }
-
-        if (tokens.get(0).equalsIgnoreCase("describe")) {
-            table t = settings.currentDB.getTable(tokens.get(1));
-            if (t == null) {
-                throw new ParseException("Parse exception (unknown table " + tokens.get(1) + ")",1);
-            }
-            System.out.println(t.describe());
-            return null;
-        }
         
-        if(tokens.get(0).equalsIgnoreCase("help"))
+        switch(tokens.get(0).toLowerCase())
         {
-            parseHelp(tokens);
-            return null;
-        }
+            case "select":
+                return parseSelect(partial);
+            case "colstats":
+                return parseColStats(partial);
+            case "show":
+                if(tokens.size() == 1 || !tokens.get(1).equalsIgnoreCase("tables"))
+                {
+                    throw new ParseException("Parse Error: Expected 'tables' got"+(tokens.size()==1?"null":tokens.get(1)),1);
+                }
+                System.out.println(settings.currentDB.showTables());
+                break;
+            case "describe":
+                if(tokens.size() == 1 )
+                {
+                    throw new ParseException("Parse Error: Expected table name got nothing",1);
+                }
+                table t = settings.currentDB.getTable(tokens.get(1));
+                if (t == null) {
+                    throw new ParseException("Parse exception (unknown table " + tokens.get(1) + ")",1);
+                }
+                System.out.println(t.describe());
+                break;
+            case "help":
+                parseHelp(tokens);
+                break;
+            case "gc":
+                parseGC(partial);
+                break;
+            default:
+                throw new ParseException("Parse Error: Couldn't parse '"+tokens.getFirst()+"'!",0);
+        } 
         
-        if(tokens.get(0).equalsIgnoreCase("gc"))
-        {
-            return parseGC(partial);
-        }
+        System.err.println("Note: Not running any map/reduce jobs for this query");
 
-        
-        throw new ParseException("Parse Error: Couldn't parse '"+tokens.getFirst()+"'!",0);
-
+        return null;
     }
     
     private static workflow parseGC(LinkedList<String> partial) throws ParseException
