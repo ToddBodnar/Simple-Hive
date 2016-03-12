@@ -37,7 +37,7 @@ public class Parser {
             partial.removeFirst();
             
         if (tokens.size() < 1) {
-            throw new ParseException("Parse exception (empty string)",0);
+            throw new ParseException("Parse Error: Empty string",0);
         }
         
         switch(tokens.get(0).toLowerCase())
@@ -60,7 +60,7 @@ public class Parser {
                 }
                 table t = settings.currentDB.getTable(tokens.get(1));
                 if (t == null) {
-                    throw new ParseException("Parse exception (unknown table " + tokens.get(1) + ")",1);
+                    throw new ParseException("Parse Error: Unknown table '" + tokens.get(1) + "'",1);
                 }
                 System.out.println(t.describe());
                 break;
@@ -124,7 +124,7 @@ public class Parser {
         String fromTableStr = next;
         table fromTable = settings.currentDB.getTable(fromTableStr);
         if (fromTable == null) {
-            throw new ParseException("SQL Error: cannot find table: " + ((fromTableStr == null) ? "null" : fromTableStr) + " in database " + ((settings.currentDB == null) ? "null" : settings.currentDB),itrnum);
+            throw new ParseException("Parse Error: Cannot find table '" + ((fromTableStr == null) ? "null" : fromTableStr) + "' in database '" + ((settings.currentDB == null) ? "null" : settings.currentDB)+"'",itrnum);
         }
 
         select = new workflow(new select(selectArgs));
@@ -138,13 +138,13 @@ public class Parser {
                 itrnum++;
                 table joinTable = settings.currentDB.getTable(fromTableStr);
                 if (joinTable == null) {
-                    throw new ParseException("SQL Error: cannot find table: " + ((fromTableStr == null) ? "null" : fromTableStr) + " in database " + ((settings.currentDB == null) ? "null" : settings.currentDB),itrnum);
+                    throw new ParseException("Parse Error: Cannot find table '" + ((fromTableStr == null) ? "null" : fromTableStr) + "' in database '" + ((settings.currentDB == null) ? "null" : settings.currentDB)+"'",itrnum);
                 }
 
                 next = itr.next();
                 itrnum++;
                 if (!next.equalsIgnoreCase("ON")) {
-                    throw new ParseException("SQL Error: Expected keyword 'ON', found " + next,itrnum);
+                    throw new ParseException("Parse Error: Expected keyword 'ON', found " + next,itrnum);
                 }
                 String t1JoinCol = itr.next();
                 itrnum++;
@@ -153,17 +153,17 @@ public class Parser {
                 itrnum++;
                 if (!next.equals("=")) {
                     itrnum++;
-                    throw new ParseException("SQL Error: Expected '=' in join statement, got " + next,itrnum);
+                    throw new ParseException("Parse Error: Expected '=' in join statement, got '" + next+"'",itrnum);
                 }
 
                 int t1JoinColNum = fromTable.getColNum(t1JoinCol);
                 int t2JoinColNum = joinTable.getColNum(t2JoinCol);
 
                 if (t1JoinColNum == -1) {
-                    throw new ParseException("SQL Error: Could not find column '" + t1JoinCol + "' in table " + fromTable,itrnum-2);
+                    throw new ParseException("Parse Error: Could not find column '" + t1JoinCol + "' in table '" + fromTable+"'",itrnum-2);
                 }
                 if (t2JoinColNum == -1) {
-                    throw new ParseException("SQL Error: Could not find column '" + t2JoinCol + "' in table " + joinTable,itrnum);
+                    throw new ParseException("Parse Error: Could not find column '" + t2JoinCol + "' in table '" + joinTable+"'",itrnum);
                 }
 
                 join join = new join(t1JoinColNum, t2JoinColNum);
@@ -184,7 +184,7 @@ public class Parser {
             if (itr.hasNext()) {
                 //next = itr.next();
                 if (!next.equalsIgnoreCase("WHERE")) {
-                    throw new ParseException("Expected where clause, found " + next,itrnum);
+                    throw new ParseException("Parse Error: Expected where clause, found '" + next+"'",itrnum);
                 }
 
                 String remaining = "";
@@ -217,13 +217,13 @@ public class Parser {
         String group_name = null;
         if (tokens.get(1).equalsIgnoreCase("GROUP")) {
             if (!tokens.get(2).equalsIgnoreCase("BY")) {
-                throw new ParseException("SQL Error: Expected keyword 'on' found " + tokens.get(2),2);
+                throw new ParseException("Parse Error: Expected keyword 'on' found '" + tokens.get(2)+"'",2);
             }
             group_name = tokens.get(3);
             tokenCount = 4;
         }
         if (!tokens.get(tokenCount).equalsIgnoreCase("FROM")) {
-            throw new ParseException("SQL Error: Expected keyword 'from' found " + tokens.get(tokenCount),tokenCount);
+            throw new ParseException("Parse Error: Expected keyword 'from' found '" + tokens.get(tokenCount)+"'",tokenCount);
         }
         tokenCount++;
         if (tokens.get(tokenCount).equalsIgnoreCase("SELECT")) {
@@ -232,18 +232,18 @@ public class Parser {
 
         table input = settings.currentDB.getTable(tokens.get(tokenCount));
         if (input == null) {
-            throw new ParseException("SQL Error: cannot find table: " + ((tokens.get(tokenCount) == null) ? "null" : tokens.get(tokenCount)) + " in database " + ((settings.currentDB == null) ? "null" : settings.currentDB),tokenCount);
+            throw new ParseException("Parse Error: cannot find table '" + ((tokens.get(tokenCount) == null) ? "null" : tokens.get(tokenCount)) + "' in database '" + ((settings.currentDB == null) ? "null" : settings.currentDB)+"'",tokenCount);
         }
 
         columnId = input.getColNum(column_name);
         if (columnId == -1) {
-            throw new ParseException("SQL Error: cannot find column " + column_name,tokenCount);
+            throw new ParseException("Parse Error: cannot find column '" + column_name+"'",tokenCount);
         }
 
         if (group_name != null) {
             groupId = input.getColNum(group_name);
             if (groupId == -1) {
-                throw new ParseException("SQL Error: cannot find column " + group_name,tokenCount);
+                throw new ParseException("Parse Error: cannot find column '" + group_name+"''",tokenCount);
             }
         }
 
