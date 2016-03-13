@@ -43,6 +43,11 @@ public class join extends query<Text, Text> {
     public table getOtherInput() {
         return other;
     }
+    
+    public String toString()
+    {
+        return "Join query : Join tables "+(getInput()==null?"null":getInput().toString())+" and "+(other==null?"null":other.toString())+" on columns "+(getInput()==null?mainKey:getInput().getColName(mainKey))+" and "+(other==null?otherKey:other.getColName(otherKey));
+    }
 
     table other;
     ramFile storage;
