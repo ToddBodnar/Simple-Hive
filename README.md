@@ -53,13 +53,15 @@ If you want to bypass the parser or workflow and write your own code directly, c
 
 Most of the main classes have `JUnitTests` for them stored in the src/test directory. You can run them by running `mvn clean test`. There are two words of caution, however. First, all of these tests are run locally and *not* through Hadoop. This may change at a later date, but doing it this way makes testing a lot faster and avoids dependence on a Hadoop cluster. Second, if the tester cannot connect to HDFS, the `hdfsFile` tests will be skipped.
 
-## TODO:
+## Roadmap:
+
+If this keeps being developed to a 2.0 version, it should include the following:
 
 ### Query parsing
-I have a simplified parser working now, but I plan on replacing it with a full parser to build ASTs (see compiler.workflow).
+I have a simplified parser working now, but I plan on replacing it with a full parser to build ASTs (see compiler.workflow). This will allow for a more generalizable query framework.
 
 ### Persistant Metastore
-Right now everything's stored in ram.
+Let the user modify the metastore by running commands like `create table` and `insert into` and be able to persist these changes over multiple db restarts.
 
-### CREATE and INSERT code
-You can do this now (most of the queries result in new tables with inserted data), but it's not front-end friendly.
+### Query optimizer
+Do things like combining multiple map stages into one (i.e. right now `select age from people where ship = 1` executes in map/reduce stages: first filter out the people table by ship id, then filter out the result to only include age. This could be optimized into one mapper that both filters by ship number and column) and discarding "useless" queries (i.e. `select * from age where true` shouldn't actually need to run any map/reduce jobs).
